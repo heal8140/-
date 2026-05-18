@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>coming-soon予約管理 デモ</title>
+<title>coming-soon予約管理</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
 
@@ -15,261 +18,296 @@
 }
 
 body{
-  background:#e9ecef;
-  font-family:
-  "Yu Gothic",
-  "Hiragino Kaku Gothic ProN",
-  sans-serif;
+  font-family:'Noto Sans JP',sans-serif;
+  background:#f4f4f4;
   overflow:hidden;
+  color:#333;
 }
 
-/* 全体 */
+/* ===== 上グリーンライン ===== */
 
-.wrapper{
-  width:100vw;
-  height:100vh;
-  overflow:auto;
-  background:#f5f5f5;
+.top-line{
+  height:8px;
+  background:#2ea500;
 }
 
-/* 上部バー */
-
-.top-green{
-  height:10px;
-  background:#2ba600;
-}
-
-/* ヘッダー */
+/* ===== ヘッダー ===== */
 
 .header{
-  background:#ffffff;
-  border-bottom:1px solid #d9d9d9;
-}
-
-/* ロゴ＋メニュー */
-
-.menu-bar{
-  height:58px;
+  height:70px;
+  background:#fff;
+  border-bottom:1px solid #ddd;
   display:flex;
   align-items:center;
   padding:0 24px;
-  gap:22px;
-  white-space:nowrap;
+  gap:34px;
   overflow-x:auto;
+  white-space:nowrap;
 }
 
 .logo{
-  color:#df2020;
   font-size:20px;
-  font-weight:bold;
+  color:#e12626;
+  font-weight:700;
 }
 
 .menu{
-  color:#222;
-  font-size:16px;
+  font-size:15px;
+  color:#333;
+  position:relative;
   cursor:pointer;
   transition:0.2s;
+  padding:24px 0;
 }
 
 .menu:hover{
   color:#008f52;
 }
 
-.menu.active{
-  border-bottom:3px solid #e53;
-  padding-bottom:14px;
+.menu.active::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:100%;
+  height:3px;
+  background:#e43a3a;
+  border-radius:10px;
 }
 
-/* メイン */
+/* ===== メイン ===== */
 
 .main{
   display:flex;
-  height:calc(100vh - 68px);
+  height:calc(100vh - 78px);
 }
 
-/* 左カレンダー */
+/* ===== 左カレンダー ===== */
 
 .sidebar{
-  width:280px;
+  width:300px;
   background:#fff;
-  border-right:1px solid #ddd;
-  padding:20px;
+  border-right:1px solid #d8d8d8;
+  padding:24px;
   overflow:auto;
 }
 
-.calendar-box{
-  background:#fff;
+.month-title{
+  font-size:58px;
+  font-weight:300;
+  margin-bottom:28px;
+  color:#222;
 }
 
-.calendar-title{
-  font-size:34px;
-  margin-bottom:18px;
-  color:#333;
-}
-
-.calendar-grid{
+.week{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:8px;
-  text-align:center;
+  margin-bottom:10px;
 }
 
-.day-name{
-  color:#999;
-  font-size:13px;
-  margin-bottom:4px;
+.week div{
+  text-align:center;
+  color:#888;
+  font-size:14px;
+}
+
+.days{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:10px;
 }
 
 .day{
-  padding:8px 0;
-  border-radius:8px;
+  height:46px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  font-weight:400;
   cursor:pointer;
-  transition:0.2s;
+  transition:0.15s;
 }
 
 .day:hover{
-  background:#e8f7ef;
+  background:#f2f8f3;
 }
 
 .today{
-  border:2px solid #e74c3c;
-  font-weight:bold;
+  border:3px solid #ef4d4d;
+  color:#111;
+  font-weight:700;
 }
 
-/* 右 */
+/* ===== 右 ===== */
 
 .content{
   flex:1;
   overflow:auto;
-  background:#f8f4e8;
+  background:#ebe8dc;
 }
 
-/* 上部情報 */
+/* ===== 上部 ===== */
 
-.content-header{
+.content-top{
+  height:110px;
   background:#fff;
   border-bottom:1px solid #ddd;
-  padding:18px 24px;
-  position:sticky;
-  top:0;
-  z-index:5;
-}
-
-.date-line{
   display:flex;
   align-items:center;
-  gap:20px;
-  font-size:18px;
+  padding:0 30px;
+  gap:28px;
+  position:sticky;
+  top:0;
+  z-index:50;
 }
 
 .today-btn{
-  background:#d71919;
+  background:#df1b1b;
   color:#fff;
   border:none;
-  padding:8px 26px;
-  border-radius:6px;
-  font-weight:bold;
-}
-
-/* 予約表 */
-
-.schedule{
-  min-width:1500px;
-}
-
-/* 時間 */
-
-.time-row{
-  display:grid;
-  grid-template-columns:180px repeat(13,1fr);
-  background:#f1efe7;
-  border-bottom:1px solid #ccc;
-  position:sticky;
-  top:76px;
-  z-index:4;
-}
-
-.time-cell{
-  padding:10px;
-  border-right:1px solid #ccc;
-  font-weight:bold;
-  background:#f6f4ec;
-}
-
-/* スタッフ行 */
-
-.staff-row{
-  display:grid;
-  grid-template-columns:180px repeat(13,1fr);
-  min-height:92px;
-}
-
-.staff-name{
-  background:#fff;
-  border-right:1px solid #ccc;
-  border-bottom:1px solid #ddd;
-  padding:14px;
-  font-weight:bold;
-}
-
-.slot{
-  border-right:1px solid #ddd;
-  border-bottom:1px solid #ddd;
-  position:relative;
-  background:#f8f4e8;
-}
-
-/* 予約 */
-
-.reserve{
-  position:absolute;
-  left:4px;
-  right:4px;
-  top:6px;
+  padding:12px 34px;
   border-radius:8px;
-  color:#fff;
-  padding:6px;
-  font-size:12px;
-  line-height:1.4;
-  overflow:hidden;
-  box-shadow:0 2px 4px rgba(0,0,0,0.15);
+  font-size:22px;
+  font-weight:700;
 }
 
-.purple{
-  background:#7070a8;
-}
-
-.gray{
-  background:#6b6b6b;
-}
-
-.yellow{
-  background:#e0a800;
+.date-text{
+  font-size:26px;
   color:#222;
 }
 
+.clock{
+  font-size:24px;
+  color:#333;
+}
+
+/* ===== スケジュール ===== */
+
+.schedule{
+  min-width:1800px;
+}
+
+/* ===== 時間行 ===== */
+
+.time-row{
+  display:grid;
+  grid-template-columns:220px repeat(13,1fr);
+  position:sticky;
+  top:110px;
+  z-index:40;
+}
+
+.time-cell{
+  height:70px;
+  background:#f8f6ef;
+  border-right:1px solid #cfcfcf;
+  border-bottom:1px solid #cfcfcf;
+  padding:18px 14px;
+  font-size:18px;
+  font-weight:700;
+}
+
+.staff-title{
+  background:#f8f6ef;
+}
+
+/* ===== スタッフ行 ===== */
+
+.staff-row{
+  display:grid;
+  grid-template-columns:220px repeat(13,1fr);
+  height:145px;
+}
+
+.staff-name{
+  background:#f7f7f7;
+  border-right:1px solid #cfcfcf;
+  border-bottom:1px solid #d7d7d7;
+  padding:22px 16px;
+  font-size:18px;
+  font-weight:700;
+}
+
+.slot{
+  position:relative;
+  border-right:1px solid #d6d6d6;
+  border-bottom:1px solid #d6d6d6;
+  background:#ebe8dc;
+}
+
+/* ===== 予約カード ===== */
+
+.card{
+  position:absolute;
+  top:10px;
+  left:8px;
+  right:8px;
+
+  border-radius:14px;
+
+  padding:10px 12px;
+
+  color:#fff;
+
+  font-size:15px;
+  line-height:1.45;
+
+  box-shadow:
+  0 4px 12px rgba(0,0,0,0.18);
+
+  transition:0.2s;
+}
+
+.card:hover{
+  transform:translateY(-2px);
+}
+
+.gray{
+  background:linear-gradient(180deg,#767676,#5d5d5d);
+}
+
+.purple{
+  background:linear-gradient(180deg,#7f7bcf,#6560b8);
+}
+
 .pink{
-  background:#ff2f8b;
+  background:linear-gradient(180deg,#ff3f93,#e91e75);
 }
 
 .blue{
-  background:#3b82f6;
+  background:linear-gradient(180deg,#4d8dff,#3272ea);
 }
 
-/* スクロールバー少し綺麗に */
+.yellow{
+  background:linear-gradient(180deg,#f2ba00,#d49f00);
+  color:#222;
+}
+
+.name{
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.plan{
+  opacity:0.96;
+  font-size:13px;
+}
+
+/* ===== スクロールバー ===== */
 
 ::-webkit-scrollbar{
-  height:10px;
-  width:10px;
+  width:12px;
+  height:12px;
 }
 
 ::-webkit-scrollbar-thumb{
-  background:#bbb;
+  background:#bdbdbd;
   border-radius:10px;
 }
 
 ::-webkit-scrollbar-track{
-  background:#eee;
+  background:#ececec;
 }
 
 </style>
@@ -277,309 +315,299 @@ body{
 
 <body>
 
-<div class="wrapper">
+<div class="top-line"></div>
 
-  <div class="top-green"></div>
+<div class="header">
 
-  <div class="header">
+  <div class="logo">coming-soon</div>
 
-    <div class="menu-bar">
+  <div class="menu active">予約管理</div>
+  <div class="menu">顧客管理</div>
+  <div class="menu">シフト</div>
+  <div class="menu">メール配信状況</div>
+  <div class="menu">メッセージ編集</div>
+  <div class="menu">販売促進</div>
+  <div class="menu">電子カルテ</div>
+  <div class="menu">外部連携</div>
+  <div class="menu">集計分析</div>
+  <div class="menu">アプリ・サイト作成</div>
 
-      <div class="logo">coming-soon</div>
+</div>
 
-      <div class="menu active">予約管理</div>
-      <div class="menu">顧客管理</div>
-      <div class="menu">シフト</div>
-      <div class="menu">メール配信状況</div>
-      <div class="menu">メッセージ編集</div>
-      <div class="menu">販売促進</div>
-      <div class="menu">電子カルテ</div>
-      <div class="menu">外部連携</div>
-      <div class="menu">集計分析</div>
-      <div class="menu">アプリ・サイト作成</div>
+<div class="main">
+
+  <!-- 左 -->
+
+  <div class="sidebar">
+
+    <div class="month-title">
+      2026/5
+    </div>
+
+    <div class="week">
+      <div>日</div>
+      <div>月</div>
+      <div>火</div>
+      <div>水</div>
+      <div>木</div>
+      <div>金</div>
+      <div>土</div>
+    </div>
+
+    <div class="days">
+
+      <div class="day">1</div>
+      <div class="day">2</div>
+      <div class="day">3</div>
+      <div class="day">4</div>
+      <div class="day">5</div>
+      <div class="day">6</div>
+      <div class="day">7</div>
+
+      <div class="day">8</div>
+      <div class="day">9</div>
+      <div class="day">10</div>
+      <div class="day">11</div>
+      <div class="day">12</div>
+      <div class="day">13</div>
+      <div class="day">14</div>
+
+      <div class="day">15</div>
+      <div class="day">16</div>
+      <div class="day">17</div>
+      <div class="day today">18</div>
+      <div class="day">19</div>
+      <div class="day">20</div>
+      <div class="day">21</div>
 
     </div>
 
   </div>
 
-  <div class="main">
+  <!-- 右 -->
 
-    <!-- 左 -->
+  <div class="content">
 
-    <div class="sidebar">
+    <div class="content-top">
 
-      <div class="calendar-box">
+      <button class="today-btn">
+        今日
+      </button>
 
-        <div class="calendar-title">
-          2026/5
-        </div>
-
-        <div class="calendar-grid">
-
-          <div class="day-name">日</div>
-          <div class="day-name">月</div>
-          <div class="day-name">火</div>
-          <div class="day-name">水</div>
-          <div class="day-name">木</div>
-          <div class="day-name">金</div>
-          <div class="day-name">土</div>
-
-          <div class="day">1</div>
-          <div class="day">2</div>
-          <div class="day">3</div>
-          <div class="day">4</div>
-          <div class="day">5</div>
-          <div class="day">6</div>
-          <div class="day">7</div>
-
-          <div class="day">8</div>
-          <div class="day">9</div>
-          <div class="day">10</div>
-          <div class="day">11</div>
-          <div class="day">12</div>
-          <div class="day">13</div>
-          <div class="day">14</div>
-
-          <div class="day">15</div>
-          <div class="day">16</div>
-          <div class="day">17</div>
-          <div class="day today">18</div>
-          <div class="day">19</div>
-          <div class="day">20</div>
-          <div class="day">21</div>
-
-        </div>
-
+      <div class="date-text">
+        2026/5/18（月）
       </div>
+
+      <div class="clock" id="clock"></div>
 
     </div>
 
-    <!-- 右 -->
+    <div class="schedule">
 
-    <div class="content">
+      <!-- 時間 -->
 
-      <div class="content-header">
+      <div class="time-row">
 
-        <div class="date-line">
-
-          <button class="today-btn">今日</button>
-
-          <div>
-            2026/5/18（月）
-          </div>
-
-          <div id="clock"></div>
-
+        <div class="time-cell staff-title">
+          スタッフ
         </div>
+
+        <div class="time-cell">9:00</div>
+        <div class="time-cell">10:00</div>
+        <div class="time-cell">11:00</div>
+        <div class="time-cell">12:00</div>
+        <div class="time-cell">13:00</div>
+        <div class="time-cell">14:00</div>
+        <div class="time-cell">15:00</div>
+        <div class="time-cell">16:00</div>
+        <div class="time-cell">17:00</div>
+        <div class="time-cell">18:00</div>
+        <div class="time-cell">19:00</div>
+        <div class="time-cell">20:00</div>
+        <div class="time-cell">21:00</div>
 
       </div>
 
-      <div class="schedule">
+      <!-- row1 -->
 
-        <!-- 時間 -->
+      <div class="staff-row">
 
-        <div class="time-row">
-
-          <div class="time-cell">スタッフ</div>
-
-          <div class="time-cell">9:00</div>
-          <div class="time-cell">10:00</div>
-          <div class="time-cell">11:00</div>
-          <div class="time-cell">12:00</div>
-          <div class="time-cell">13:00</div>
-          <div class="time-cell">14:00</div>
-          <div class="time-cell">15:00</div>
-          <div class="time-cell">16:00</div>
-          <div class="time-cell">17:00</div>
-          <div class="time-cell">18:00</div>
-          <div class="time-cell">19:00</div>
-          <div class="time-cell">20:00</div>
-          <div class="time-cell">21:00</div>
-
+        <div class="staff-name">
+          施術スタッフ1
         </div>
 
-        <!-- スタッフ1 -->
+        <div class="slot"></div>
 
-        <div class="staff-row">
-
-          <div class="staff-name">
-            施術スタッフ1
+        <div class="slot">
+          <div class="card gray">
+            <div class="name">桜井礼子様</div>
+            <div class="plan">吸い放題プレミア</div>
           </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve gray">
-              桜井礼子様<br>
-              吸い放題プレミア
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve purple">
-              原田綾子様<br>
-              追加レプトン
-            </div>
-          </div>
-
-          <div class="slot"></div>
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve pink">
-              和泉千恵様<br>
-              吸い放題プラン
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve blue">
-              小泉俊介様<br>
-              レプトンガス
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve purple">
-              高島大樹様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot"></div>
-
         </div>
 
-        <!-- スタッフ2 -->
+        <div class="slot"></div>
 
-        <div class="staff-row">
-
-          <div class="staff-name">
-            施術スタッフ2
+        <div class="slot">
+          <div class="card purple">
+            <div class="name">原田綾子様</div>
+            <div class="plan">追加レプトン</div>
           </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve gray">
-              島田夏子様
-            </div>
-          </div>
-
-          <div class="slot">
-            <div class="reserve gray">
-              高宮裕様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve gray">
-              宮本美穂様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve purple">
-              福島奈々様
-            </div>
-          </div>
-
-          <div class="slot">
-            <div class="reserve yellow">
-              マンスリープラン
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve yellow">
-              鶴岡雄介様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve blue">
-              片田直樹様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
         </div>
 
-        <!-- スタッフ3 -->
+        <div class="slot"></div>
+        <div class="slot"></div>
 
-        <div class="staff-row">
-
-          <div class="staff-name">
-            施術スタッフ3
+        <div class="slot">
+          <div class="card pink">
+            <div class="name">和泉千恵様</div>
+            <div class="plan">吸い放題プラン</div>
           </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve gray">
-              福岡涼子様
-            </div>
-          </div>
-
-          <div class="slot">
-            <div class="reserve gray">
-              川和千早様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve gray">
-              前田太郎様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve pink">
-              橋信子様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve purple">
-              稲垣恵子様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot">
-            <div class="reserve pink">
-              清田彩野様
-            </div>
-          </div>
-
-          <div class="slot"></div>
-
-          <div class="slot"></div>
-
         </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card blue">
+            <div class="name">小泉俊介様</div>
+            <div class="plan">レプトンガス</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card purple">
+            <div class="name">高島大樹様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot"></div>
+
+      </div>
+
+      <!-- row2 -->
+
+      <div class="staff-row">
+
+        <div class="staff-name">
+          施術スタッフ2
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card gray">
+            <div class="name">島田夏子様</div>
+          </div>
+        </div>
+
+        <div class="slot">
+          <div class="card gray">
+            <div class="name">高宮裕様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card gray">
+            <div class="name">宮本美穂様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card purple">
+            <div class="name">福島奈々様</div>
+          </div>
+        </div>
+
+        <div class="slot">
+          <div class="card yellow">
+            <div class="name">マンスリープラン</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card yellow">
+            <div class="name">鶴岡雄介様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card blue">
+            <div class="name">片田直樹様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+      </div>
+
+      <!-- row3 -->
+
+      <div class="staff-row">
+
+        <div class="staff-name">
+          施術スタッフ3
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card gray">
+            <div class="name">福岡涼子様</div>
+          </div>
+        </div>
+
+        <div class="slot">
+          <div class="card gray">
+            <div class="name">川和千早様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card gray">
+            <div class="name">前田太郎様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card pink">
+            <div class="name">橋信子様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card purple">
+            <div class="name">稲垣恵子様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot">
+          <div class="card pink">
+            <div class="name">清田彩野様</div>
+          </div>
+        </div>
+
+        <div class="slot"></div>
+
+        <div class="slot"></div>
 
       </div>
 
@@ -595,18 +623,18 @@ function updateClock(){
 
   const now = new Date();
 
-  const h = String(now.getHours()).padStart(2,"0");
-  const m = String(now.getMinutes()).padStart(2,"0");
-  const s = String(now.getSeconds()).padStart(2,"0");
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
 
-  document.getElementById("clock").innerText =
-  h + ":" + m + ":" + s;
+  document.getElementById('clock').innerText =
+  `${h}:${m}:${s}`;
 
 }
 
-setInterval(updateClock,1000);
-
 updateClock();
+
+setInterval(updateClock,1000);
 
 </script>
 
