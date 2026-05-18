@@ -7,69 +7,71 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --green:#2ea000;
-  --red:#df3030;
-  --bg:#efecdf;
-  --panel:#f7f7f7;
-  --line:#d5d5d5;
-  --line-dark:#b7b7b7;
-  --text:#333;
-  --muted:#7a7a7a;
-  --blue:#6fb9d9;
-  --pill:#ffffff;
-  --shadow:0 1px 1px rgba(0,0,0,.06), 0 1px 0 rgba(255,255,255,.55) inset;
-  --card-shadow:0 1px 0 rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.08);
-  --header-h:88px;
-  --topbar-h:86px;
-  --sidebar-w:260px;
-  --time-w:130px;
-  --slot-h:35px;
-  --row-h:54px;
-  --free-h:210px;
-  --slot-min:76px;
+  --green:#2fa000;
+  --red:#d63b3b;
+  --bg:#f2ecd8;
+  --panel:#f8f8f8;
+  --line:#d4d4d4;
+  --line2:#c4c4c4;
+  --line3:#b5b5b5;
+  --text:#303030;
+  --muted:#7c7c7c;
+  --blue:#77b9d7;
+  --shadow:0 1px 1px rgba(0,0,0,.06);
+  --card-shadow:0 1px 0 rgba(0,0,0,.14), 0 1px 3px rgba(0,0,0,.10);
+  --header-h:48px;
+  --subheader-h:66px;
+  --sidebar-w:234px;
+  --time-w:144px;
+  --slot-h:54px;
+  --free-h:198px;
+  --cell-min:74px;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
   font-family:'Noto Sans JP',sans-serif;
-  background:#fff;
   color:var(--text);
+  background:#fff;
   overflow:hidden;
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
 }
 button{font:inherit}
+
 .top-green{height:4px;background:var(--green)}
+
 .header{
   height:44px;
   display:flex;
   align-items:center;
   gap:14px;
-  padding:0 16px;
-  border-bottom:1px solid #dcdcdc;
+  padding:0 14px;
   background:#fff;
-  box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+  border-bottom:1px solid #dedede;
 }
 .logo{
-  font-size:18px;
+  color:#c93030;
   font-weight:700;
-  color:#cf2f2f;
-  letter-spacing:.02em;
-  margin-right:4px;
-  position:relative;
+  font-size:18px;
+  letter-spacing:.01em;
   line-height:1;
+  position:relative;
+  margin-right:2px;
 }
 .logo:before{
   content:"";
   position:absolute;
-  top:-7px;left:50%;
+  top:-8px;
+  left:50%;
   transform:translateX(-50%);
-  width:28px;height:3px;
+  width:30px;
+  height:3px;
   border-radius:999px;
-  background:#b02424;
+  background:#b42a2a;
 }
-.home{font-size:23px;color:#2c2c2c;line-height:1}
+.home{font-size:22px;line-height:1;color:#222}
 .menu{
   height:44px;
   display:flex;
@@ -77,7 +79,6 @@ button{font:inherit}
   font-size:14px;
   color:#222;
   padding:0 8px;
-  cursor:default;
   position:relative;
   white-space:nowrap;
 }
@@ -89,18 +90,19 @@ button{font:inherit}
 .menu.active:before{
   content:"";
   position:absolute;
-  top:0;left:50%;
+  top:0;
+  left:50%;
   transform:translateX(-50%);
-  width:36px;height:3px;
+  width:38px;
+  height:3px;
   border-radius:999px;
-  background:#d63a3a;
+  background:var(--red);
 }
 .right-group{
   margin-left:auto;
   display:flex;
   align-items:center;
   gap:16px;
-  color:#333;
 }
 .setting{font-size:14px}
 .power{font-size:22px;line-height:1}
@@ -109,76 +111,87 @@ button{font:inherit}
   height:calc(100vh - 48px);
   display:grid;
   grid-template-columns:var(--sidebar-w) 1fr;
-  background:#fff;
 }
 
 .sidebar{
+  background:#fbfbfb;
   border-right:1px solid #dfdfdf;
-  background:#fafafa;
   overflow:auto;
 }
 .side-tabs{
   display:flex;
   gap:10px;
-  padding:16px 18px 10px;
+  padding:14px 18px 10px;
 }
 .side-tab{
-  min-width:64px;
+  min-width:66px;
   padding:6px 16px;
-  border-radius:11px;
-  background:#fff;
-  border:1px solid #d0d0d0;
   text-align:center;
-  font-size:16px;
   font-weight:700;
+  font-size:16px;
+  border-radius:12px;
+  border:1px solid #d3d3d3;
+  background:#fff;
   box-shadow:var(--shadow);
 }
 .side-tab.active{background:#f0f0f0}
+
 .calendar-wrap{padding:8px 16px 18px}
 .month-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:12px;
-  padding:0 2px;
+  margin:10px 2px 8px;
 }
-.arrow{font-size:28px;color:#6b6b6b;line-height:1}
-.month-text{font-size:19px;font-weight:500;color:#222}
+.month-head .arrow{
+  font-size:26px;
+  color:#666;
+  line-height:1;
+}
+.month-text{
+  font-size:19px;
+  font-weight:500;
+  color:#222;
+}
 .week{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  margin-bottom:8px;
   font-size:13px;
+  margin-bottom:7px;
 }
-.week div{text-align:center;color:#909090}
-.week .sun{color:#c63a3a}
-.week .sat{color:#2b60d6}
+.week div{
+  text-align:center;
+  color:#8f8f8f;
+}
+.week .sun{color:#c94a4a}
+.week .sat{color:#305fdb}
+
 .days{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:5px 0;
+  gap:2px 0;
 }
 .day{
-  height:24px;
+  height:28px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:16px;
   color:#222;
-  border-radius:5px;
+  border-radius:6px;
 }
-.day.sun{color:#c63a3a}
-.day.sat{color:#2b60d6}
+.day.sun{color:#c94a4a}
+.day.sat{color:#305fdb}
 .day.today{
-  border:2px solid #d63a3a;
-  width:28px;
-  height:28px;
+  width:30px;
+  height:30px;
   justify-self:center;
-  align-self:center;
+  border:2px solid var(--red);
   background:#fff;
 }
-.day.pink{background:#f6ccd4}
-.month-gap{height:6px}
+.day.pink{background:#f7d5dd}
+
+.month-gap{height:18px}
 
 .content{
   overflow:auto;
@@ -192,33 +205,35 @@ button{font:inherit}
   border-bottom:1px solid #ddd;
 }
 .salontop{
-  height:34px;
+  height:32px;
   display:flex;
   align-items:center;
-  padding:0 18px;
   gap:10px;
-  border-bottom:1px solid #ececec;
+  padding:0 14px;
   background:#fcfcfc;
+  border-bottom:1px solid #ededed;
 }
 .back-btn{
-  width:24px;height:24px;
-  border-radius:6px;
-  background:#e7e7e7;
+  width:24px;
+  height:24px;
+  border-radius:5px;
+  background:#e8e8e8;
   display:flex;
   align-items:center;
   justify-content:center;
-  color:#666;
   font-size:20px;
+  color:#666;
   line-height:1;
 }
 .salon-name{font-size:15px;color:#444}
+
 .toolbar{
   height:58px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 18px 0 12px;
-  gap:12px;
+  padding:0 12px 0 12px;
+  gap:10px;
   background:#fff;
 }
 .left-controls{
@@ -226,11 +241,6 @@ button{font:inherit}
   align-items:center;
   gap:10px;
   min-width:0;
-}
-.day-switch{
-  display:flex;
-  align-items:center;
-  gap:14px;
 }
 .big-date{
   font-size:18px;
@@ -241,70 +251,72 @@ button{font:inherit}
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  min-width:150px;
+  min-width:154px;
   height:20px;
   padding:0 10px;
-  background:#76b7d4;
-  color:#fff;
   border-radius:2px;
   font-size:12px;
   font-weight:700;
+  color:#fff;
+  background:#76b7d4;
 }
 .nav-icons{
   display:flex;
   align-items:center;
-  gap:10px;
-  color:#8c8c8c;
-  margin-left:8px;
+  gap:8px;
+  color:#959595;
+  margin-left:4px;
 }
 .nav-icon{
-  width:28px;height:28px;
+  width:26px;
+  height:26px;
   display:flex;
   align-items:center;
   justify-content:center;
+  border-radius:5px;
   font-size:18px;
-  border-radius:6px;
 }
 .date-group{
   display:flex;
   align-items:stretch;
-  gap:2px;
-  margin-left:4px;
+  gap:0;
+  margin-left:2px;
 }
 .date-box{
-  width:32px;
+  width:33px;
+  height:48px;
+  border:1px solid #cfcfcf;
+  background:#fff;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  background:#fff;
-  border:1px solid #cfcfcf;
-  padding:2px 0 1px;
+  margin-left:-1px;
 }
+.date-box:first-child{margin-left:0}
 .date-box .dow{
   font-size:12px;
-  color:#7b7b7b;
-  line-height:1.2;
+  line-height:1.1;
+  color:#777;
 }
 .date-box .num{
-  font-size:18px;
-  line-height:1.1;
-  font-weight:500;
+  font-size:19px;
+  line-height:1.05;
 }
 .date-box.active{
-  border:2px solid #d33b3b;
-  z-index:1;
+  border:2px solid #d33c3c;
+  z-index:2;
 }
-.date-box.pink{background:#f8d6dd}
-.date-box.sun .dow,.date-box.sun .num{color:#d24a4a}
-.date-box.sat .dow,.date-box.sat .num{color:#2f63d9}
+.date-box.pink{background:#f7d7de}
+.date-box.sun .dow,.date-box.sun .num{color:#ce4e4e}
+.date-box.sat .dow,.date-box.sat .num{color:#315fdb}
 
 .action-icons{
   display:flex;
   align-items:center;
   gap:10px;
-  margin-left:10px;
-  color:#b1b1b1;
+  margin-left:8px;
+  color:#b2b2b2;
 }
 .action{
   display:flex;
@@ -314,121 +326,123 @@ button{font:inherit}
   color:#b0b0b0;
 }
 .action .ico{
-  width:24px;height:24px;
+  width:24px;
+  height:24px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:18px;
 }
 .view-pill{
-  background:#808080;
+  background:#838383;
   color:#fff;
   font-size:13px;
   font-weight:700;
   padding:6px 10px;
   border-radius:4px;
-  line-height:1;
+  white-space:nowrap;
 }
 
 .legend-wrap{
   display:flex;
   align-items:center;
   gap:8px;
-  flex-wrap:nowrap;
+  white-space:nowrap;
   overflow:hidden;
 }
 .legend{
-  min-width:84px;
-  height:28px;
+  min-width:88px;
+  height:30px;
   padding:0 10px;
   border-radius:2px;
   display:flex;
   align-items:center;
   gap:6px;
-  color:#fff;
   font-size:13px;
   font-weight:700;
-  box-shadow:var(--shadow);
+  color:#fff;
 }
-.legend.gray{background:#585858}
-.legend.green{background:#007c0f}
-.legend.pink{background:#ed0d6f}
-.legend.purple{background:#6a6a98}
+.legend.gray{background:#5d5d5d}
+.legend.green{background:#008a14}
+.legend.pink{background:#e70f74}
+.legend.purple{background:#6a6a97}
 .legend.yellow{background:#efb400;color:#222}
-.circle{width:11px;height:11px;border-radius:50%;background:#fff}
+.circle{
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:#fff;
+}
 
 .board-wrap{
   background:var(--bg);
-  min-height:calc(100vh - 96px);
   overflow:auto;
+  min-height:calc(100vh - 106px);
 }
 .board{
-  min-width:1520px;
-  padding:0 0 120px;
+  min-width:1530px;
+  padding-bottom:120px;
 }
 .time-row{
   display:grid;
-  grid-template-columns:var(--time-w) repeat(14, minmax(var(--slot-min),1fr));
+  grid-template-columns:var(--time-w) repeat(14, minmax(var(--cell-min),1fr));
   position:sticky;
   top:0;
   z-index:15;
 }
 .time-cell{
-  height:28px;
+  height:30px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:13px;
   font-weight:500;
-  color:#222;
   background:#efefef;
-  border-right:1px solid #b7b7b7;
-  border-bottom:1px solid #b7b7b7;
+  border-right:1px solid var(--line3);
+  border-bottom:1px solid var(--line3);
 }
 .time-cell.head{
   justify-content:flex-end;
   padding-right:10px;
+  font-weight:500;
 }
+
 .row{
   display:grid;
-  grid-template-columns:var(--time-w) repeat(14, minmax(var(--slot-min),1fr));
-  height:var(--row-h);
+  grid-template-columns:var(--time-w) repeat(14, minmax(var(--cell-min),1fr));
+  height:var(--slot-h);
 }
 .row.free{height:var(--free-h)}
 .staff{
-  background:#f7f7f7;
-  border-right:1px solid #b7b7b7;
-  border-bottom:1px solid #b7b7b7;
-  display:flex;
-  align-items:flex-start;
-  justify-content:flex-start;
-  padding:7px 8px;
+  background:#f8f8f8;
+  border-right:1px solid var(--line3);
+  border-bottom:1px solid var(--line3);
+  padding:8px 8px;
   font-size:14px;
   font-weight:700;
-  color:#333;
+  display:flex;
+  align-items:flex-start;
 }
-.staff.free{background:#f0ead8}
+.staff.free{background:#efe7cf}
+
 .slot{
   position:relative;
-  border-right:1px solid #cfcfcf;
-  border-bottom:1px solid #cfcfcf;
   background:var(--bg);
+  border-right:1px solid #d6d0c3;
+  border-bottom:1px solid #d6d0c3;
   overflow:visible;
 }
 .row.free .slot{
-  background:#f3ead0;
+  background:#f0e5c8;
 }
-.row.free .slot:nth-child(odd){
-  background:#f1e7ca;
-}
-.grid-fill{
+.slot::before{
+  content:"";
   position:absolute;
   inset:0;
-  background:
-    linear-gradient(to right, rgba(255,255,255,.08) 0, rgba(255,255,255,.08) 1px, transparent 1px, transparent 100%),
-    linear-gradient(to bottom, rgba(255,255,255,.08) 0, rgba(255,255,255,.08) 1px, transparent 1px, transparent 100%);
-  background-size:100% 100%;
+  background:linear-gradient(to bottom, rgba(255,255,255,.03), rgba(0,0,0,.01));
+  pointer-events:none;
 }
+
 .reserve{
   position:absolute;
   top:2px;
@@ -436,31 +450,33 @@ button{font:inherit}
   right:2px;
   bottom:2px;
   border-radius:2px;
-  border:1px solid rgba(0,0,0,.2);
+  border:1px solid rgba(0,0,0,.18);
   box-shadow:var(--card-shadow);
   overflow:hidden;
   z-index:2;
 }
 .reserve-inner{
-  padding:3px 4px 4px;
   height:100%;
+  padding:3px 4px 4px;
   display:flex;
   flex-direction:column;
   gap:1px;
 }
-.reserve.gray{background:#69698f;color:#fff}
-.reserve.yellow{background:#f0c236;color:#1d1d1d}
-.reserve.blue{background:#2e89df;color:#fff}
-.reserve.green{background:#17761f;color:#fff}
-.reserve.pink{background:#ff0f79;color:#fff}
-.reserve.light{background:#c8c8d0;color:#222}
+.reserve.gray{background:#6a6a93;color:#fff}
+.reserve.yellow{background:#f0c231;color:#1d1d1d}
+.reserve.blue{background:#2f8bdf;color:#fff}
+.reserve.green{background:#0f7d19;color:#fff}
+.reserve.pink{background:#ff1381;color:#fff}
+.reserve.light{background:#c9c9d1;color:#222}
+
 .top-tags{
   display:flex;
   gap:2px;
   margin-bottom:1px;
 }
 .tag{
-  width:14px;height:14px;
+  width:14px;
+  height:14px;
   border-radius:2px;
   display:flex;
   align-items:center;
@@ -469,15 +485,16 @@ button{font:inherit}
   font-weight:700;
   line-height:1;
 }
-.tag.pink{background:#ff1485;color:#fff}
-.tag.yellow{background:#ffd62d;color:#222}
-.tag.blue{background:#238bf6;color:#fff}
+.tag.pink{background:#ff1285;color:#fff}
+.tag.yellow{background:#ffd52d;color:#222}
+.tag.blue{background:#1f8bff;color:#fff}
+
 .reserve-name,
 .reserve-plan{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  line-height:1.15;
+  line-height:1.1;
 }
 .reserve-name{
   font-size:11px;
@@ -486,47 +503,42 @@ button{font:inherit}
 .reserve-plan{
   font-size:10px;
   font-weight:700;
-  opacity:.95;
-}
-.reserve.small .reserve-name,
-.reserve.small .reserve-plan{
-  font-size:10px;
 }
 
 .break-area{
   position:absolute;
   inset:0;
-  background:#1d7a25;
-  z-index:1;
+  background:#1f7f28;
 }
 .break-small{
   position:absolute;
-  width:40px;
+  width:41px;
   height:24px;
-  background:#17621b;
-  border:2px solid #a2dea7;
-  color:#fff;
   border-radius:4px;
+  border:2px solid #a3dea9;
+  background:#17631c;
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:11px;
-  font-weight:700;
 }
 .free-grid{
   position:absolute;
   inset:0;
   display:grid;
-  grid-template-columns:repeat(4, 1fr);
   grid-auto-rows:1fr;
   gap:8px;
   padding:8px;
 }
+.free-grid.cols-4{grid-template-columns:repeat(4,1fr)}
+.free-grid.cols-3{grid-template-columns:repeat(3,1fr)}
 .empty-box{
-  border:2px solid rgba(255,255,255,.55);
-  opacity:.58;
-  border-radius:1px;
   position:relative;
+  border:2px solid rgba(255,255,255,.55);
+  border-radius:1px;
+  opacity:.62;
 }
 .empty-box:before{
   content:"X";
@@ -539,12 +551,11 @@ button{font:inherit}
   font-size:16px;
   font-weight:500;
 }
-.scrollbar-spacer{
-  height:18px;
-}
-@media (max-width:1400px){
-  :root{--sidebar-w:240px}
-  .menu{font-size:13px}
+
+@media (max-width:1450px){
+  :root{--sidebar-w:224px;--time-w:134px;--cell-min:70px}
+  .menu{font-size:13px;padding:0 6px}
+  .legend{min-width:82px}
 }
 </style>
 </head>
@@ -599,10 +610,9 @@ button{font:inherit}
 
       <div class="month-gap"></div>
 
-      <div class="month-head" style="margin-top:14px;">
+      <div class="month-head" style="margin-top:8px;">
         <div class="month-text">2026/6</div>
-        <div></div>
-        <div></div>
+        <div></div><div></div>
       </div>
 
       <div class="week">
@@ -628,10 +638,8 @@ button{font:inherit}
 
       <div class="toolbar">
         <div class="left-controls">
-          <div class="day-switch">
-            <div class="big-date">2026/5/20（水）</div>
-            <div class="future">未来の日付です</div>
-          </div>
+          <div class="big-date">2026/5/20（水）</div>
+          <div class="future">未来の日付です</div>
 
           <div class="nav-icons">
             <div class="nav-icon">⟳</div>
@@ -644,24 +652,12 @@ button{font:inherit}
             <div class="date-box active">
               <div class="dow">水</div><div class="num">20</div>
             </div>
-            <div class="date-box">
-              <div class="dow">木</div><div class="num">21</div>
-            </div>
-            <div class="date-box">
-              <div class="dow">金</div><div class="num">22</div>
-            </div>
-            <div class="date-box pink sat">
-              <div class="dow">土</div><div class="num">23</div>
-            </div>
-            <div class="date-box sun">
-              <div class="dow">日</div><div class="num">24</div>
-            </div>
-            <div class="date-box">
-              <div class="dow">月</div><div class="num">25</div>
-            </div>
-            <div class="date-box">
-              <div class="dow">火</div><div class="num">26</div>
-            </div>
+            <div class="date-box"><div class="dow">木</div><div class="num">21</div></div>
+            <div class="date-box"><div class="dow">金</div><div class="num">22</div></div>
+            <div class="date-box pink sat"><div class="dow">土</div><div class="num">23</div></div>
+            <div class="date-box sun"><div class="dow">日</div><div class="num">24</div></div>
+            <div class="date-box"><div class="dow">月</div><div class="num">25</div></div>
+            <div class="date-box"><div class="dow">火</div><div class="num">26</div></div>
           </div>
 
           <div class="action-icons">
@@ -677,7 +673,7 @@ button{font:inherit}
           <div class="legend purple"><div class="circle"></div>吸い放題...</div>
           <div class="legend purple"><div class="circle"></div>吸い放題...</div>
           <div class="legend purple"><div class="circle"></div>吸い放題...</div>
-          <div class="legend yellow"><div class="circle"></div>吸い放題...</div>
+          <div class="legend yellow"><div class="circle"></div>吸い放題</div>
         </div>
       </div>
     </div>
@@ -718,14 +714,14 @@ button{font:inherit}
           <div class="slot">
             <div class="break-area">
               <div class="break-small" style="top:3px;left:3px;">BR</div>
-              <div class="break-small" style="top:3px;left:52px;">BR</div>
-              <div class="break-small" style="top:3px;left:100px;">BR</div>
+              <div class="break-small" style="top:3px;left:51px;">BR</div>
+              <div class="break-small" style="top:3px;left:99px;">BR</div>
             </div>
           </div>
           <div class="slot">
             <div class="break-area">
               <div class="break-small" style="top:3px;left:3px;">BR</div>
-              <div class="break-small" style="top:3px;left:52px;">BRK</div>
+              <div class="break-small" style="top:3px;left:51px;">BRK</div>
             </div>
           </div>
           <div class="slot">
@@ -878,28 +874,26 @@ button{font:inherit}
         <div class="row free">
           <div class="staff free">フリー</div>
           <div class="slot">
-            <div class="free-grid">
+            <div class="free-grid cols-4">
               <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
             </div>
           </div>
           <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
           <div class="slot">
-            <div class="free-grid" style="grid-template-columns:repeat(4,1fr);">
+            <div class="free-grid cols-4">
               <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
               <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
             </div>
           </div>
           <div class="slot"></div><div class="slot"></div>
           <div class="slot">
-            <div class="free-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="free-grid cols-3">
               <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
               <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
             </div>
           </div>
           <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
         </div>
-
-        <div class="scrollbar-spacer"></div>
       </div>
     </div>
   </section>
