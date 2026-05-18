@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+
+
+
+
+
+
+
+<html>
+  <head>
+    <link rel="icon" href="/ucs/non-release/resource/images/csc/favicon20230425.ico" sizes="any"><!-- 32×32 -->
+    <link rel="icon" href="/ucs/non-release/resource/images/csc/favicon20230425.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/ucs/non-release/resource/images/csc/apple-touch-icon20230425.png"><!-- 180×180 -->
+    
+    
+      <title>coming-soon予約管理</title>
+    
+    <meta content='initial-scale=1.0' name='viewport'>
+    <meta content='text/html;charset=utf-8' http-equiv='Content-Type'>
+    <link href='/ucs/non-release/resource/css/csc/lib/font-awesome.css' rel='stylesheet'>
+    <link href='/ucs/non-release/resource/css/csc/styles.css' rel='stylesheet'>
+    <link href='/ucs/non-release/resource/css/csc/gcs.css' rel='stylesheet'>
+    <link href='/ucs/non-release/resource/css/thickbox.css' rel='stylesheet' media='screen'>
+    <script type="text/javascript" src="dwr/engine.js"></script>
+    <script type="text/javascript" src="dwr/util.js"></script>
+    <script type="text/javascript" src="dwr/interface/ReservationAppHandshakeService.js"></script>
+    <script type="text/javascript" src="dwr/interface/ReservationTableAppService.js"></script>
+    <script type="text/javascript" src="dwr/interface/CustomerSearchService.js"></script>
+
+    <script type="text/javascript" src="/ucs/non-release/resource/js/moment-2.13.0.min.js"></script>
+    <script type="text/javascript" src="/ucs/non-release/resource/js/jquery/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript" src="/ucs/non-release/resource/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/ucs/non-release/resource/js/jquery/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript" src="/ucs/non-release/resource/js/jquery/jquery.gpobservetext-1.0.min.js"></script>
+    <script>
+      //noConflictを呼ぶごとに最終読み込みガージョンが変数に代入され、'jQuery'変数は一つ前に読み込んだバージョンに戻される
+      var jQ223 = jQuery.noConflict(true);//gcsView用
+      var $ = jQuery.noConflict(true);//thickbox用
+      //上記で'jQuery'変数がnullにならないよう、冒頭に一つ2.2.3のリンクを追加しておく
+    </script>
+
+    <script type="text/javascript" src="/ucs/non-release/resource/js/jquery/thickbox.js"></script>
+    <script type="text/javascript" src="/ucs/non-release/resource/js/jquery/thickboxUtil.js"></script>
+    <script src='/ucs/non-release/resource/js/swfobject.js'></script>
+    <script src='/ucs/non-release/resource/js/csc/gcsView.js?20260511071252'></script>
+
+    <script>
+      function initialize() {
+
+      }
+      function NewWindow(url, name, width, height){
+      	newWin = window.open(url, name, ("toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizeable=no, width=" + width + ", height=" + height));
+      	newWin.focus();
+      }
+
+      function EditCustomer(val, reservationDate){
+      	urlStr = "/ucs/manager/registerReservedCustomer.do?isReadMaster=true&customerId=" + val + "&latestReservationHistory=true&reservationDate=" + reservationDate;
+      	NewWindow(urlStr, "CUSTOMER", 770, 730);
+      }
+
+      function openHelp(){
+        if (false){
+          urlStr = "https://secure01.red.shared-server.net/www.sosjapan.co.jp/backup/BackupHelp/Backuphelp.htm";
+        } else {
+          urlStr = "/support/gcsfaq/?p=178";
+        }
+        window.open(urlStr);//新規タブで開く
+      }
+
+      function openAppMailHelp(){
+      	urlStr = "https://1cs.jp/support/gcsfaq/?p=14795";
+      	NewWindow(urlStr, "HELP", 800, 600);
+      }
+
+      function DivTransfer(reserveNo, val){
+      	switch(val) {
+      	case 0:
+      		window.location = "/ucs/reserveService.do";
+      		break;
+      	case 1:
+      		urlStr = "/ucs/manager/reserveMatcher.do";
+      		NewWindow(urlStr, "MATCHER", 600, 500);
+      		break;
+      	case 13:
+      		reserveNo = reserveNo.split("-").join("");
+      		urlStr = "/ucs/manager/reserveMatcher.do?_SEQUENCE=13&reserveId=" + reserveNo;
+      		NewWindow(urlStr, "MATCHER", 600, 500);
+      		break;
+      	}
+      }
+
+      function Settings(val) {
+      	DivTransfer(null, val);
+      }
+
+      function moveBook(targetDate) {
+      	var uri = "/ucs/reserveService.do";
+      	if(targetDate) {
+      		uri += "?StartupDate=" + targetDate;
+      	}
+      	window.location = uri;
+      }
+
+      function forwardReservation(targetDate) {
+      	moveBook(targetDate);
+      }
+
+      //休日情報取得
+      function callFindHolidays(callbackFuncName) {
+        ReservationTableAppService.findHolidaysV1(function (result) {
+          if (result && result.holidays){
+            for (var i in result.holidays){
+              result.holidays[i].yyyymmdd = moment(result.holidays[i].date).format('YYYYMMDD');
+            }
+          }
+          getBookElement()[callbackFuncName](JSON.stringify(result.holidays || null));
+        });
+      }
+
+      //認証番号登録
+      function callRegisterCustomerByAffiliateNumber(salonId, customerId, affilateNumber, callbackFuncName){
+      	ReservationAppHandshakeService.registerCustomerByAffiliateNumber(salonId, customerId, affilateNumber, function(result){
+      		var bookElement = getBookElement();
+      		if (bookElement) bookElement[callbackFuncName](result);
+      	});
+      }
+
+      //認証番号解除
+      function callRemoveCustomer(salonId, customerId, appOwnerId, callbackFuncName){
+      	ReservationAppHandshakeService.removeCustomer(salonId, customerId, appOwnerId, function(result){
+      		var bookElement = getBookElement();
+      		if (bookElement) bookElement[callbackFuncName](result);
+      	});
+      }
+
+      //登録済みリスト取得
+      function callFindAppOwnerByCustomer(salonId, customerId, callbackFuncName){
+      	ReservationAppHandshakeService.findAppOwnerByCustomer(salonId, customerId, function(result){
+      		var bookElement = getBookElement();
+      		if (bookElement) bookElement[callbackFuncName](JSON.stringify(result));
+      	});
+      }
+
+      //アプリ告知メール送信
+      function callExecSendAppUrlViaMail(salonId, customerId, callbackFuncName){
+      	ReservationAppHandshakeService.execSendAppUrlViaMail(salonId, customerId, function(result){
+      		getBookElement()[callbackFuncName](result);
+      	});
+      }
+
+      //重複顧客かも？
+      function callFindIfUserIsPossiblyDuplicated(customerId, callbackFuncName){
+        if (customerId <= 0) {
+          return getBookElement()[callbackFuncName](false);
+        }
+        CustomerSearchService.findIfUserIsPossiblyDuplicated(customerId, function(result){
+          getBookElement()[callbackFuncName](result);
+        });
+      }
+
+      //例外エラー
+      dwr.engine.setErrorHandler(function(message, ex) {
+      	var bookElement = getBookElement();
+      	if (bookElement) bookElement.resultExError(message, ex);
+      });
+
+      //予約管理画面　book.swfの貼り付けエレメントを取得
+      function getBookElement(){
+      	return document.book || window.book || getFlashElementById("book");
+      }
+
+      function getFlashElementById(id){
+      	var element = document.getElementById(id);
+      	if(!element) return null;
+
+      	var nodes = element.getElementsByTagName("embed");
+      	if(nodes.length){
+      		return nodes[nodes.length-1];
+      	}
+
+      	var nodes = element.getElementsByTagName("object");
+      	if(nodes.length){
+      		return nodes[nodes.length-1];
+      	}
+
+      	return null;
+      }
+      function gotoSubMenu(action) {
+    		location.href="/ucs" + action;
+      }
+      function gotoSubMenuWithNewWindow(action) {
+          window.open("/ucs" + action, "_blank");
+      }
+    </script>
+    <style type="text/css">
+    #TB_overlay,
+    * html #TB_overlay {
+    	background-color: #cccccc !important;
+    }
+    #TB_window {
+    	margin-top: -220px;
+    	border: solid 0px #d9d9d9 !important;
+    }
+    </style>
+  </head>
+  <body class='newCS' onLoad="initialize();">
+    <div class='reserveServiceContainer'>
+      
+      <header>
+      <!-- ヘッダーカラーバー  -->
+      <div class='headerColorBar standard'></div>
+      <!-- メインメニュー -->
+      
+      
+      <div class='menuBar crearfix'>
+      
+        <div class='container'>
+          
+          
+          <button class='menuButton csLogo' onclick="gotoSubMenu('/manager/setupStoreInformation.do?_FUNCTION=PAGE-STORE-INFORMATION-001');"></button>
+          
+        
+        
+          <button id="topmenu" class='menuButton home ' onclick="gotoSubMenu('/manager/setupStoreInformation.do?_FUNCTION=PAGE-STORE-INFORMATION-001');"></button>
+          <button class='menuButton selected' onclick="gotoSubMenu('/reserveService.do');">予約管理</button>
+          <button class='menuButton ' onclick="gotoSubMenu('/manager/searchCustomer.do?action=init&shopId=42770');">顧客管理</button>
+          <button class='menuButton ' onclick="gotoSubMenu('/manager/setupStaffShift.do');">シフト</button>
+          <button class='menuButton ' onclick="gotoSubMenu('/manager/enterInviteCustomer.do?shopId=42770&action=reset');">メール配信状況</button>
+          <button class='menuButton ' onclick="gotoSubMenu('/manager/setupMailConfigure.do');">メッセージ編集</button>
+          <button class='menuButton ' onclick="gotoSubMenu('/manager/setupMailMagazine.do?_FUNCTION=PAGE-STORE-OPTION-MAGAZINE-DEFAULT');">販売促進</button>
+          <button class='menuButton  ' onclick="gotoSubMenu('/manager/setupKarteApp.do');">電子カルテ</button>
+          <button class='menuButton ' onclick="gotoSubMenu('/manager/externalReserveDescription.do');">外部連携</button>
+          <button class='menuButton ' onclick="gotoSubMenu('/manager/analyzeReserveCount.do');">集計分析</button>
+	  	  
+		  
+			 <button class='menuButton ' onclick="gotoSubMenu('/manager/setupPwaApp.do');">アプリ・サイト作成</button>
+		  
+		  
+	  	
+          <button class='menuButton rightAlign powerButton'></button>
+          <div class='subMenuBox'>
+            <div class='subMenu'>
+              <button class='subMenuButton' onclick="location.href='/ucs/CSCServices?_FUNCTION=PAGE-STORE-LOGIN-001'">ログアウト</button>
+            </div>
+          </div>
+          
+          <button class='menuButton rightAlign  ' onclick="location.href='/ucs/manager/storeConfigure.do?_FUNCTION=PAGE-STORE-CONFIGURE-001'">設定</button>
+          
+        </div>
+      </div>
+      </header>
+      
+
+      <!-- メインセクション -->
+      <section>
+        <div class='bookContainer'>
+          <iframe id='book' style='width:100%; height:100%; padding-top:0px; overflow:auto;' src='./reserveServiceHtml.do?StartupDate='>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
