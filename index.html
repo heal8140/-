@@ -4,40 +4,68 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>クリックゲーム</title>
+  <title>放置ゲーム</title>
 
   <style>
 
+    *{
+      box-sizing:border-box;
+    }
+
     body{
       margin:0;
-      height:100vh;
+      background:#111;
+      color:white;
+      font-family:sans-serif;
       display:flex;
       justify-content:center;
       align-items:center;
-      background:#111;
-      font-family:sans-serif;
-      color:white;
+      height:100vh;
     }
 
     .game{
+      width:350px;
+      background:#1e1e1e;
+      padding:30px;
+      border-radius:20px;
       text-align:center;
+      box-shadow:0 0 20px rgba(0,0,0,0.5);
     }
 
     h1{
-      font-size:48px;
-      margin-bottom:20px;
+      margin-top:0;
+      font-size:32px;
+    }
+
+    .money{
+      font-size:40px;
+      margin:20px 0;
     }
 
     button{
-      padding:20px 40px;
-      font-size:24px;
+      width:100%;
+      padding:15px;
+      margin-top:10px;
       border:none;
       border-radius:12px;
+      font-size:18px;
       cursor:pointer;
     }
 
-    button:hover{
-      opacity:0.8;
+    .click-btn{
+      background:#4caf50;
+      color:white;
+    }
+
+    .shop-btn{
+      background:#333;
+      color:white;
+    }
+
+    .info{
+      margin-top:20px;
+      font-size:14px;
+      color:#aaa;
     }
 
   </style>
@@ -47,28 +75,138 @@
 
   <div class="game">
 
-    <h1 id="score">0</h1>
+    <h1>放置ゲーム</h1>
 
-    <button id="btn">
-      クリック！
+    <div class="money">
+      ¥<span id="money">0</span>
+    </div>
+
+    <button class="click-btn" id="clickBtn">
+      クリックして稼ぐ
     </button>
+
+    <button class="shop-btn" id="staffBtn">
+      スタッフ雇用 (100円)
+    </button>
+
+    <button class="shop-btn" id="machineBtn">
+      機械導入 (500円)
+    </button>
+
+    <div class="info">
+
+      スタッフ数：
+      <span id="staffCount">0</span>
+
+      <br><br>
+
+      機械数：
+      <span id="machineCount">0</span>
+
+      <br><br>
+
+      自動収益：
+      ¥<span id="income">0</span>/秒
+
+    </div>
 
   </div>
 
   <script>
 
-    let score = 0;
+    let money = 0;
 
-    const scoreText = document.getElementById("score");
-    const btn = document.getElementById("btn");
+    let staff = 0;
+    let machine = 0;
 
-    btn.addEventListener("click", ()=>{
+    let autoIncome = 0;
 
-      score++;
+    const moneyText = document.getElementById("money");
+    const incomeText = document.getElementById("income");
 
-      scoreText.textContent = score;
+    const staffCount = document.getElementById("staffCount");
+    const machineCount = document.getElementById("machineCount");
+
+    const clickBtn = document.getElementById("clickBtn");
+    const staffBtn = document.getElementById("staffBtn");
+    const machineBtn = document.getElementById("machineBtn");
+
+
+
+    // 表示更新
+    function updateScreen(){
+
+      moneyText.textContent = money;
+      incomeText.textContent = autoIncome;
+
+      staffCount.textContent = staff;
+      machineCount.textContent = machine;
+
+    }
+
+
+
+    // クリック収益
+    clickBtn.addEventListener("click", ()=>{
+
+      money += 1;
+
+      updateScreen();
 
     });
+
+
+
+    // スタッフ購入
+    staffBtn.addEventListener("click", ()=>{
+
+      if(money >= 100){
+
+        money -= 100;
+
+        staff++;
+
+        autoIncome += 1;
+
+        updateScreen();
+
+      }
+
+    });
+
+
+
+    // 機械購入
+    machineBtn.addEventListener("click", ()=>{
+
+      if(money >= 500){
+
+        money -= 500;
+
+        machine++;
+
+        autoIncome += 5;
+
+        updateScreen();
+
+      }
+
+    });
+
+
+
+    // 自動収益
+    setInterval(()=>{
+
+      money += autoIncome;
+
+      updateScreen();
+
+    },1000);
+
+
+
+    updateScreen();
 
   </script>
 
