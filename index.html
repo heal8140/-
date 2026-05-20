@@ -1,563 +1,76 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>coming-soon予約管理</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-<style>
-:root{
-  --green:#2fa000;
-  --red:#d63b3b;
-  --bg:#f3ecd8;
-  --bg2:#efe6cc;
-  --panel:#ffffff;
-  --line:#d9d9d9;
-  --line2:#c7c7c7;
-  --line3:#aaaaaa;
-  --text:#2d2d2d;
-  --muted:#7a7a7a;
-  --blue:#6fb2d3;
-  --graybtn:#7f7f7f;
-  --shadow:0 1px 1px rgba(0,0,0,.06);
-  --card-shadow:0 1px 0 rgba(0,0,0,.16), 0 1px 3px rgba(0,0,0,.12);
-  --header-h:44px;
-  --subheader-h:58px;
-  --sidebar-w:248px;
-  --time-w:150px;
-  --slot-h:54px;
-  --free-h:198px;
-  --cell-min:76px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  font-family:'Noto Sans JP',sans-serif;
-  color:var(--text);
-  background:#fff;
-  overflow:hidden;
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-}
-button{font:inherit;border:0;background:none}
-.top-green{height:4px;background:var(--green)}
-.header{
-  height:44px;display:flex;align-items:center;gap:0;
-  padding:0 12px;background:#fff;border-bottom:1px solid #dedede;
-}
-.logo{
-  color:#c93030;font-weight:700;font-size:18px;letter-spacing:.01em;line-height:1;
-  position:relative;margin-right:8px;padding-right:12px;
-}
-.logo:before{
-  content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%);
-  width:30px;height:3px;border-radius:999px;background:#b42a2a
-}
-.home{font-size:22px;line-height:1;color:#222;margin-right:8px;padding-right:10px;border-right:1px solid #e3e3e3}
-.menu{
-  height:44px;display:flex;align-items:center;font-size:14px;color:#222;
-  padding:0 10px;position:relative;white-space:nowrap;cursor:default
-}
-.menu.active{background:#efefef;border-left:1px solid #e0e0e0;border-right:1px solid #e0e0e0}
-.menu.active:before{
-  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:38px;height:3px;border-radius:999px;background:var(--red)
-}
-.right-group{margin-left:auto;display:flex;align-items:center;gap:16px}
-.setting{font-size:14px}
-.power{font-size:22px;line-height:1}
-.main{height:calc(100vh - 48px);display:grid;grid-template-columns:var(--sidebar-w) 1fr}
-.sidebar{background:#fbfbfb;border-right:1px solid #dfdfdf;overflow:auto}
-.side-tabs{display:flex;gap:10px;padding:14px 18px 10px}
-.side-tab{
-  min-width:66px;padding:6px 16px;text-align:center;font-weight:700;font-size:16px;
-  border-radius:12px;border:1px solid #d3d3d3;background:#fff;box-shadow:var(--shadow)
-}
-.side-tab.active{background:#f0f0f0}
-.calendar-wrap{padding:8px 16px 18px}
-.month-head{display:flex;align-items:center;justify-content:space-between;margin:10px 2px 8px}
-.month-head .arrow{font-size:26px;color:#666;line-height:1}
-.month-text{font-size:19px;font-weight:500;color:#222}
-.week{display:grid;grid-template-columns:repeat(7,1fr);font-size:13px;margin-bottom:7px}
-.week div{text-align:center;color:#8f8f8f}
-.week .sun{color:#c94a4a}.week .sat{color:#305fdb}
-.days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px 0}
-.day{height:28px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#222;border-radius:6px}
-.day.sun{color:#c94a4a}.day.sat{color:#305fdb}
-.day.today{width:30px;height:30px;justify-self:center;border:2px solid var(--red);background:#fff}
-.day.pink{background:#f7d5dd}
-.month-gap{height:18px}
-.content{overflow:auto;background:#fff}
-.content-top{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid #ddd}
-.salontop{
-  height:32px;display:flex;align-items:center;gap:10px;padding:0 14px;
-  background:#fcfcfc;border-bottom:1px solid #ededed
-}
-.back-btn{
-  width:24px;height:24px;border-radius:5px;background:#e8e8e8;display:flex;
-  align-items:center;justify-content:center;font-size:20px;color:#666;line-height:1
-}
-.salon-name{font-size:15px;color:#444}
-.toolbar{
-  min-height:58px;display:flex;align-items:center;justify-content:space-between;
-  padding:6px 12px 8px 12px;gap:10px;background:#fff;flex-wrap:wrap
-}
-.left-controls{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
-.big-date{font-size:18px;font-weight:500;white-space:nowrap}
-.future{
-  display:inline-flex;align-items:center;justify-content:center;min-width:154px;height:20px;
-  padding:0 10px;border-radius:2px;font-size:12px;font-weight:700;color:#fff;background:#76b7d4
-}
-.nav-icons{display:flex;align-items:center;gap:8px;color:#959595;margin-left:4px}
-.nav-icon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:18px}
-.date-group{display:flex;align-items:stretch;gap:0;margin-left:2px}
-.date-box{
-  width:33px;height:48px;border:1px solid #cfcfcf;background:#fff;display:flex;
-  flex-direction:column;align-items:center;justify-content:center;margin-left:-1px
-}
-.date-box:first-child{margin-left:0}
-.date-box .dow{font-size:12px;line-height:1.1;color:#777}
-.date-box .num{font-size:19px;line-height:1.05}
-.date-box.active{border:2px solid #d33c3c;z-index:2}
-.date-box.pink{background:#f7d7de}
-.date-box.sun .dow,.date-box.sun .num{color:#ce4e4e}
-.date-box.sat .dow,.date-box.sat .num{color:#315fdb}
-.action-icons{display:flex;align-items:center;gap:10px;margin-left:8px;color:#b2b2b2}
-.action{display:flex;align-items:center;gap:4px;font-size:12px;color:#b0b0b0}
-.action .ico{width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.view-pill{background:#838383;color:#fff;font-size:13px;font-weight:700;padding:6px 10px;border-radius:4px;white-space:nowrap}
-.legend-wrap{
-  display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;
-  flex-wrap:wrap;justify-content:flex-end;max-width:100%
-}
-.legend{
-  min-width:88px;height:30px;padding:0 10px;border-radius:2px;display:flex;align-items:center;
-  gap:6px;font-size:13px;font-weight:700;color:#fff
-}
-.legend.gray{background:#5d5d5d}
-.legend.green{background:#008a14}
-.legend.pink{background:#e70f74}
-.legend.purple{background:#6a6a97}
-.legend.yellow{background:#efb400;color:#222}
-.circle{width:11px;height:11px;border-radius:50%;background:#fff}
-.board-wrap{background:var(--bg);overflow:auto;min-height:calc(100vh - 106px)}
-.board{min-width:1530px;padding-bottom:120px}
-.time-row{
-  display:grid;grid-template-columns:var(--time-w) repeat(14, minmax(var(--cell-min),1fr));
-  position:sticky;top:0;z-index:15
-}
-.time-cell{
-  height:30px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;
-  background:#efefef;border-right:1px solid var(--line3);border-bottom:1px solid var(--line3)
-}
-.time-cell.head{justify-content:flex-end;padding-right:10px;font-weight:500}
-.row{
-  display:grid;grid-template-columns:var(--time-w) repeat(14, minmax(var(--cell-min),1fr));
-  height:var(--slot-h)
-}
-.row.free{height:var(--free-h)}
-.staff{
-  background:#f8f8f8;border-right:1px solid var(--line3);border-bottom:1px solid var(--line3);
-  padding:8px 8px;font-size:14px;font-weight:700;display:flex;align-items:flex-start
-}
-.staff.free{background:#efe7cf}
-.slot{
-  position:relative;background:var(--bg);border-right:1px solid #d6d0c3;border-bottom:1px solid #d6d0c3;overflow:visible
-}
-.row.free .slot{background:#f0e5c8}
-.slot::before{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(to bottom, rgba(255,255,255,.03), rgba(0,0,0,.01));pointer-events:none
-}
-.reserve{
-  position:absolute;top:2px;left:2px;right:2px;bottom:2px;border-radius:2px;border:1px solid rgba(0,0,0,.18);
-  box-shadow:var(--card-shadow);overflow:hidden;z-index:2
-}
-.reserve-inner{
-  height:100%;padding:3px 4px 4px;display:flex;flex-direction:column;gap:1px
-}
-.reserve.gray{background:#6a6a93;color:#fff}
-.reserve.yellow{background:#f0c231;color:#1d1d1d}
-.reserve.blue{background:#2f8bdf;color:#fff}
-.reserve.green{background:#0f7d19;color:#fff}
-.reserve.pink{background:#ff1381;color:#fff}
-.reserve.light{background:#c9c9d1;color:#222}
-.top-tags{display:flex;gap:2px;margin-bottom:1px}
-.tag{
-  width:14px;height:14px;border-radius:2px;display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:700;line-height:1
-}
-.tag.pink{background:#ff1285;color:#fff}
-.tag.yellow{background:#ffd52d;color:#222}
-.tag.blue{background:#1f8bff;color:#fff}
-.reserve-name,
-.reserve-plan{
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1
-}
-.reserve-name{font-size:11px;font-weight:700}
-.reserve-plan{font-size:10px;font-weight:700}
-.break-area{position:absolute;inset:0;background:#1f7f28}
-.break-small{
-  position:absolute;width:41px;height:24px;border-radius:4px;border:2px solid #a3dea9;background:#17631c;
-  color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center
-}
-.free-grid{
-  position:absolute;inset:0;display:grid;grid-auto-rows:1fr;gap:8px;padding:8px
-}
-.free-grid.cols-4{grid-template-columns:repeat(4,1fr)}
-.free-grid.cols-3{grid-template-columns:repeat(3,1fr)}
-.empty-box{
-  position:relative;border:2px solid rgba(255,255,255,.55);border-radius:1px;opacity:.62
-}
-.empty-box:before{
-  content:"X";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  color:rgba(255,255,255,.95);font-size:16px;font-weight:500
-}
-@media (max-width:1450px){
-  :root{--sidebar-w:224px;--time-w:134px;--cell-min:70px}
-  .menu{font-size:13px;padding:0 6px}
-  .legend{min-width:82px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>クリックゲーム</title>
+
+  <style>
+
+    body{
+      margin:0;
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:#111;
+      font-family:sans-serif;
+      color:white;
+    }
+
+    .game{
+      text-align:center;
+    }
+
+    h1{
+      font-size:48px;
+      margin-bottom:20px;
+    }
+
+    button{
+      padding:20px 40px;
+      font-size:24px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+    }
+
+    button:hover{
+      opacity:0.8;
+    }
+
+  </style>
 </head>
+
 <body>
-<div class="top-green"></div>
 
-<div class="header">
-  <div class="logo">coming-soon</div>
-  <div class="home">⌂</div>
-  <div class="menu active">予約管理</div>
-  <div class="menu">顧客管理</div>
-  <div class="menu">シフト</div>
-  <div class="menu">メール配信状況</div>
-  <div class="menu">メッセージ編集</div>
-  <div class="menu">販売促進</div>
-  <div class="menu">電子カルテ</div>
-  <div class="menu">外部連携</div>
-  <div class="menu">集計分析</div>
-  <div class="menu">アプリ・サイト作成</div>
-  <div class="right-group">
-    <div class="setting">設定</div>
-    <div class="power">⏻</div>
+  <div class="game">
+
+    <h1 id="score">0</h1>
+
+    <button id="btn">
+      クリック！
+    </button>
+
   </div>
-</div>
 
-<div class="main">
-  <aside class="sidebar">
-    <div class="side-tabs">
-      <div class="side-tab">日付</div>
-      <div class="side-tab active">予約数</div>
-    </div>
+  <script>
 
-    <div class="calendar-wrap">
-      <div class="month-head">
-        <div class="arrow">‹</div>
-        <div class="month-text">2026/5</div>
-        <div class="arrow">›</div>
-      </div>
+    let score = 0;
 
-      <div class="week">
-        <div class="sun">日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div class="sat">土</div>
-      </div>
+    const scoreText = document.getElementById("score");
+    const btn = document.getElementById("btn");
 
-      <div class="days">
-        <div class="day"></div><div class="day"></div><div class="day"></div>
-        <div class="day">1</div><div class="day">2</div><div class="day sat">3</div><div class="day sun">4</div>
-        <div class="day">5</div><div class="day">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div><div class="day sat">10</div><div class="day sun">11</div>
-        <div class="day">12</div><div class="day">13</div><div class="day">14</div><div class="day">15</div><div class="day">16</div><div class="day sat">17</div><div class="day today">18</div>
-        <div class="day">19</div><div class="day today">20</div><div class="day">21</div><div class="day">22</div><div class="day pink">23</div><div class="day sat">24</div><div class="day sun">25</div>
-        <div class="day">26</div><div class="day">27</div><div class="day">28</div><div class="day">29</div><div class="day">30</div><div class="day sat">31</div><div class="day"></div>
-      </div>
+    btn.addEventListener("click", ()=>{
 
-      <div class="month-gap"></div>
+      score++;
 
-      <div class="month-head" style="margin-top:8px;">
-        <div class="month-text">2026/6</div>
-        <div></div><div></div>
-      </div>
+      scoreText.textContent = score;
 
-      <div class="week">
-        <div class="sun">日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div class="sat">土</div>
-      </div>
+    });
 
-      <div class="days">
-        <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day">1</div><div class="day sat">2</div>
-        <div class="day sun">3</div><div class="day">4</div><div class="day">5</div><div class="day">6</div><div class="day">7</div><div class="day sat">8</div><div class="day sun">9</div>
-        <div class="day">10</div><div class="day">11</div><div class="day">12</div><div class="day">13</div><div class="day">14</div><div class="day sat">15</div><div class="day sun">16</div>
-        <div class="day">17</div><div class="day">18</div><div class="day">19</div><div class="day">20</div><div class="day">21</div><div class="day sat">22</div><div class="day sun">23</div>
-        <div class="day">24</div><div class="day">25</div><div class="day">26</div><div class="day">27</div><div class="day">28</div><div class="day sat">29</div><div class="day sun">30</div>
-      </div>
-    </div>
-  </aside>
+  </script>
 
-  <section class="content">
-    <div class="content-top">
-      <div class="salontop">
-        <div class="back-btn">‹</div>
-        <div class="salon-name">水素サロンheal</div>
-      </div>
-
-      <div class="toolbar">
-        <div class="left-controls">
-          <div class="big-date">2026/5/20（水）</div>
-          <div class="future">未来の日付です</div>
-
-          <div class="nav-icons">
-            <div class="nav-icon">⟳</div>
-            <div class="nav-icon">‹</div>
-            <div class="nav-icon">◻</div>
-            <div class="nav-icon">›</div>
-          </div>
-
-          <div class="date-group">
-            <div class="date-box active">
-              <div class="dow">水</div><div class="num">20</div>
-            </div>
-            <div class="date-box"><div class="dow">木</div><div class="num">21</div></div>
-            <div class="date-box"><div class="dow">金</div><div class="num">22</div></div>
-            <div class="date-box pink sat"><div class="dow">土</div><div class="num">23</div></div>
-            <div class="date-box sun"><div class="dow">日</div><div class="num">24</div></div>
-            <div class="date-box"><div class="dow">月</div><div class="num">25</div></div>
-            <div class="date-box"><div class="dow">火</div><div class="num">26</div></div>
-          </div>
-
-          <div class="action-icons">
-            <div class="action"><div class="ico">🗑</div><span>キャンセル</span></div>
-            <div class="view-pill">表示モード</div>
-          </div>
-        </div>
-
-        <div class="legend-wrap">
-          <div class="legend gray"><div class="circle"></div>IDLE</div>
-          <div class="legend green"><div class="circle"></div>BREAK</div>
-          <div class="legend pink"><div class="circle"></div>保証</div>
-          <div class="legend purple"><div class="circle"></div>吸い放題…</div>
-          <div class="legend purple"><div class="circle"></div>吸い放題…</div>
-          <div class="legend purple"><div class="circle"></div>吸い放題…</div>
-          <div class="legend yellow"><div class="circle"></div>吸い放題</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="board-wrap">
-      <div class="board">
-        <div class="time-row">
-          <div class="time-cell head">残数</div>
-          <div class="time-cell">9:00</div>
-          <div class="time-cell">10:00</div>
-          <div class="time-cell">11:00</div>
-          <div class="time-cell">12:00</div>
-          <div class="time-cell">13:00</div>
-          <div class="time-cell">14:00</div>
-          <div class="time-cell">15:00</div>
-          <div class="time-cell">16:00</div>
-          <div class="time-cell">17:00</div>
-          <div class="time-cell">18:00</div>
-          <div class="time-cell">19:00</div>
-          <div class="time-cell">20:00</div>
-          <div class="time-cell">21:00</div>
-          <div class="time-cell">22:00</div>
-        </div>
-
-        <div class="row">
-          <div class="staff">施術スタッフ1</div>
-          <div class="slot"></div>
-          <div class="slot">
-            <div class="reserve yellow">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag blue">指</div></div>
-                <div class="reserve-name">ウィットモア　秀</div>
-                <div class="reserve-plan">レプトンガス吸入60分</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div><div class="slot"></div>
-          <div class="slot">
-            <div class="break-area">
-              <div class="break-small" style="top:3px;left:3px;">BR</div>
-              <div class="break-small" style="top:3px;left:51px;">BR</div>
-              <div class="break-small" style="top:3px;left:99px;">BR</div>
-            </div>
-          </div>
-          <div class="slot">
-            <div class="break-area">
-              <div class="break-small" style="top:3px;left:3px;">BR</div>
-              <div class="break-small" style="top:3px;left:51px;">BRK</div>
-            </div>
-          </div>
-          <div class="slot">
-            <div class="reserve gray">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag pink">N</div></div>
-                <div class="reserve-name">金子美和</div>
-                <div class="reserve-plan">吸い放題プラン</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div>
-          <div class="slot">
-            <div class="reserve gray">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag pink">N</div><div class="tag yellow">i</div></div>
-                <div class="reserve-name">小久保 尚美</div>
-                <div class="reserve-plan">吸い放題プラン</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot">
-            <div class="reserve gray">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag pink">N</div><div class="tag yellow">i</div></div>
-                <div class="reserve-name">八木秀子</div>
-                <div class="reserve-plan">吸い放題プラス(90分)</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div>
-        </div>
-
-        <div class="row">
-          <div class="staff">施術スタッフ2</div>
-          <div class="slot"></div><div class="slot"></div>
-          <div class="slot">
-            <div class="reserve yellow" style="left:2px;right:-70px;z-index:3;">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag pink">N</div><div class="tag yellow">i</div></div>
-                <div class="reserve-name">村澤美香(むらさわみか)様</div>
-                <div class="reserve-plan">マンスリープラン2</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div>
-          <div class="slot">
-            <div class="reserve yellow">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag blue">指</div></div>
-                <div class="reserve-plan">【初回限定】レプトン</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"><div class="break-area"></div></div>
-          <div class="slot"></div><div class="slot"></div>
-          <div class="slot">
-            <div class="reserve yellow">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag blue">指</div></div>
-                <div class="reserve-name">宮崎　香織</div>
-                <div class="reserve-plan">レプトンガス吸入90分＋水素</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div><div class="slot"></div>
-        </div>
-
-        <div class="row">
-          <div class="staff">施術スタッフ3</div>
-          <div class="slot"></div><div class="slot"></div>
-          <div class="slot">
-            <div class="reserve yellow">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag pink">N</div><div class="tag yellow">i</div></div>
-                <div class="reserve-name">五十嵐景子</div>
-                <div class="reserve-plan">マンスリープラン</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div>
-          <div class="slot"><div class="break-area"></div></div>
-          <div class="slot"></div>
-          <div class="slot">
-            <div class="reserve gray">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag pink">N</div><div class="tag yellow">i</div></div>
-                <div class="reserve-name">片山剛</div>
-                <div class="reserve-plan">吸い放題プラン</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div>
-          <div class="slot">
-            <div class="reserve yellow">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag pink">N</div><div class="tag yellow">i</div></div>
-                <div class="reserve-name">宮崎陽平</div>
-                <div class="reserve-plan">レプトンガス吸入90分＋水素</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div><div class="slot"></div>
-        </div>
-
-        <div class="row">
-          <div class="staff">施術スタッフ4</div>
-          <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
-          <div class="slot">
-            <div class="reserve gray">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag blue">指</div></div>
-                <div class="reserve-name">桐山千草</div>
-                <div class="reserve-plan">吸い放題プラン</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot">
-            <div class="reserve blue">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag blue">指</div></div>
-                <div class="reserve-name">中嶋都夫</div>
-                <div class="reserve-plan">レプトンガス</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"><div class="break-area"></div></div>
-          <div class="slot">
-            <div class="reserve gray">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag pink">N</div></div>
-                <div class="reserve-name">山口三穂</div>
-                <div class="reserve-plan">吸い放題プラス(90分)</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div>
-          <div class="slot">
-            <div class="reserve light">
-              <div class="reserve-inner">
-                <div class="top-tags"><div class="tag blue">指</div></div>
-                <div class="reserve-name">(6月からL90)鳴海恵志</div>
-                <div class="reserve-plan">吸い放題プレミア(120分)</div>
-              </div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div><div class="slot"></div>
-        </div>
-
-        <div class="row free">
-          <div class="staff free">フリー</div>
-          <div class="slot">
-            <div class="free-grid cols-4">
-              <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
-          <div class="slot">
-            <div class="free-grid cols-4">
-              <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
-              <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div>
-          <div class="slot">
-            <div class="free-grid cols-3">
-              <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
-              <div class="empty-box"></div><div class="empty-box"></div><div class="empty-box"></div>
-            </div>
-          </div>
-          <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
 </body>
 </html>
