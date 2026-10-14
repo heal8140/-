@@ -1,0 +1,625 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML練習ドリル</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Noto Sans JP", sans-serif;
+  background: #f3f6fa;
+  color: #243247;
+}
+
+header {
+  background: #253b60;
+  color: white;
+  padding: 26px 16px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+header p {
+  color: #d6e1f1;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 850px;
+  margin: 30px auto;
+  padding: 0 16px 40px;
+}
+
+.card {
+  background: white;
+  padding: 28px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px #15294710;
+  margin-bottom: 20px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.progress-bar {
+  height: 10px;
+  background: #e5eaf2;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #4792dd;
+  transition: width .3s;
+}
+
+h2 {
+  font-size: 20px;
+  margin-top: 0;
+}
+
+.question-box {
+  background: #f0f5fc;
+  border-left: 4px solid #4189d4;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 6px;
+}
+
+.example {
+  background: white;
+  border: 1px solid #dce5f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.example h1,
+.example h2 {
+  margin: 8px 0;
+}
+
+.example p {
+  margin: 8px 0;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+textarea {
+  width: 100%;
+  height: 130px;
+  padding: 16px;
+  border: 2px solid #dce3ed;
+  border-radius: 9px;
+  font-family: Consolas, monospace;
+  font-size: 16px;
+  resize: vertical;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #478ddb;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+button {
+  border: none;
+  padding: 13px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.primary {
+  background: #397fd1;
+  color: white;
+}
+
+.secondary {
+  background: #e9eef6;
+  color: #344866;
+}
+
+.next {
+  background: #36a478;
+  color: white;
+}
+
+button:hover {
+  opacity: .85;
+}
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.result {
+  display: none;
+  padding: 17px;
+  border-radius: 9px;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.correct {
+  background: #e5f8ee;
+  color: #167445;
+}
+
+.incorrect {
+  background: #ffebeb;
+  color: #b33838;
+}
+
+.hint {
+  display: none;
+  background: #fff6dd;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.answer {
+  display: none;
+  background: #edf3fb;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+pre {
+  background: #25344b;
+  color: #e8f3ff;
+  padding: 18px;
+  border-radius: 8px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.preview-title {
+  margin-top: 30px;
+  font-weight: bold;
+}
+
+iframe {
+  width: 100%;
+  height: 130px;
+  border: 1px solid #dae3ee;
+  background: white;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  color: #8b97a8;
+  padding: 20px;
+}
+
+@media(max-width:600px) {
+  .card {
+    padding: 18px;
+  }
+
+  button {
+    flex: 1;
+  }
+
+  header h1 {
+    font-size: 22px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>HTML練習ドリル</h1>
+  <p>コードを書いて、HTMLを楽しく覚えよう！</p>
+</header>
+
+<main class="container">
+
+  <div class="card">
+    <div class="progress-info">
+      <span id="progressText">問題 1 / 10</span>
+      <span id="scoreText">正解数：0</span>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <h2 id="questionTitle"></h2>
+
+    <div class="question-box">
+      <div id="questionDescription"></div>
+
+      <div class="example" id="example"></div>
+    </div>
+
+    <label for="codeInput">HTMLコードを入力してください</label>
+
+    <textarea
+      id="codeInput"
+      spellcheck="false"
+      placeholder="ここにHTMLを入力..."
+    ></textarea>
+
+    <div class="buttons">
+      <button class="primary" onclick="checkAnswer()">
+        答え合わせ
+      </button>
+
+      <button class="secondary" onclick="showHint()">
+        ヒント
+      </button>
+
+      <button class="secondary" onclick="showAnswer()">
+        答えを見る
+      </button>
+    </div>
+
+    <div id="result" class="result"></div>
+
+    <div id="hint" class="hint"></div>
+
+    <div id="answer" class="answer">
+      <strong>模範解答</strong>
+      <pre id="answerCode"></pre>
+    </div>
+
+    <div class="preview-title">
+      あなたのHTML表示プレビュー
+    </div>
+
+    <iframe
+      id="preview"
+      title="HTMLプレビュー"
+      sandbox=""
+      referrerpolicy="no-referrer"
+    ></iframe>
+
+    <div class="buttons">
+      <button class="next" id="nextButton"
+        onclick="nextQuestion()" disabled>
+        次の問題へ →
+      </button>
+
+      <button class="secondary" onclick="resetAnswer()">
+        入力を消す
+      </button>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  HTML Practice / Learning Site
+</footer>
+
+<script>
+
+// ==================================
+// 問題データ
+// ==================================
+
+const questions = [
+
+  {
+    title: "段落を作ろう",
+    description: "「こんにちは」を段落として表示してください。",
+    example: "<p>こんにちは</p>",
+    answer: "<p>こんにちは</p>",
+    hint: "段落には p タグを使います。"
+  },
+
+  {
+    title: "大きな見出し",
+    description: "「HTMLの勉強」を一番大きな見出しにしてください。",
+    example: "<h1>HTMLの勉強</h1>",
+    answer: "<h1>HTMLの勉強</h1>",
+    hint: "一番大きな見出しには h1 タグを使います。"
+  },
+
+  {
+    title: "小さな見出し",
+    description: "「お知らせ」を2番目の大きさの見出しにしてください。",
+    example: "<h2>お知らせ</h2>",
+    answer: "<h2>お知らせ</h2>",
+    hint: "h1 の次に大きな見出しは h2 です。"
+  },
+
+  {
+    title: "文字を太字にする",
+    description: "「重要」という文字を太字にしてください。",
+    example: "<strong>重要</strong>",
+    answer: "<strong>重要</strong>",
+    hint: "重要な文字を強調するには strong タグを使います。"
+  },
+
+  {
+    title: "改行しよう",
+    description: "「おはよう」の後に改行タグを入れて「こんにちは」と表示してください。",
+    example: "おはよう<br>こんにちは",
+    answer: "おはよう<br>こんにちは",
+    hint: "改行には br タグを使います。"
+  },
+
+  {
+    title: "リンクを作ろう",
+    description: "「Google」という文字から https://www.google.com に移動するリンクを作ってください。",
+    example: '<a href="https://www.google.com">Google</a>',
+    answer: '<a href="https://www.google.com">Google</a>',
+    hint: "リンクには a タグと href 属性を使います。"
+  },
+
+  {
+    title: "箇条書きを作ろう",
+    description: "「りんご」と「みかん」を箇条書きにしてください。",
+    example: "<ul><li>りんご</li><li>みかん</li></ul>",
+    answer: "<ul>\n  <li>りんご</li>\n  <li>みかん</li>\n</ul>",
+    hint: "ul タグの中に li タグを並べます。"
+  },
+
+  {
+    title: "番号付きリスト",
+    description: "「HTML」と「CSS」を番号付きリストにしてください。",
+    example: "<ol><li>HTML</li><li>CSS</li></ol>",
+    answer: "<ol>\n  <li>HTML</li>\n  <li>CSS</li>\n</ol>",
+    hint: "番号付きリストは ol タグを使います。"
+  },
+
+  {
+    title: "区切り線を入れよう",
+    description: "「区切り線」という文字の後に水平線を入れてください。",
+    example: "区切り線<hr>",
+    answer: "区切り線<hr>",
+    hint: "水平線には hr タグを使います。"
+  },
+
+  {
+    title: "HTMLを組み合わせよう",
+    description: "「自己紹介」をh1で表示し、その下に「よろしくお願いします」をpで表示してください。",
+    example: "<h1>自己紹介</h1><p>よろしくお願いします</p>",
+    answer: "<h1>自己紹介</h1>\n<p>よろしくお願いします</p>",
+    hint: "h1 タグと p タグを組み合わせます。"
+  }
+
+];
+
+// ==================================
+// 進捗管理
+// ==================================
+
+let currentQuestion = 0;
+let score = 0;
+let solved = new Set();
+
+const input = document.getElementById("codeInput");
+
+// ==================================
+// HTMLコードを比較用に整理
+// ==================================
+
+function normalizeHTML(html) {
+  return html
+    .trim()
+    .replace(/>\s+</g, "><")
+    .replace(/<br\s*\/?>/gi, "<br>")
+    .replace(/<hr\s*\/?>/gi, "<hr>");
+}
+
+// ==================================
+// 問題を表示
+// ==================================
+
+function loadQuestion() {
+
+  const q = questions[currentQuestion];
+
+  document.getElementById("questionTitle").textContent =
+    "Q" + (currentQuestion + 1) + ". " + q.title;
+
+  document.getElementById("questionDescription").textContent =
+    q.description;
+
+  document.getElementById("example").innerHTML = q.example;
+
+  document.getElementById("progressText").textContent =
+    "問題 " + (currentQuestion + 1) + " / " + questions.length;
+
+  document.getElementById("scoreText").textContent =
+    "正解数：" + score;
+
+  document.getElementById("progressFill").style.width =
+    (currentQuestion / questions.length * 100) + "%";
+
+  input.value = "";
+
+  document.getElementById("result").style.display = "none";
+  document.getElementById("hint").style.display = "none";
+  document.getElementById("answer").style.display = "none";
+
+  document.getElementById("nextButton").disabled = true;
+
+  updatePreview();
+}
+
+// ==================================
+// 答え合わせ
+// ==================================
+
+function checkAnswer() {
+
+  const userAnswer = normalizeHTML(input.value);
+
+  const correctAnswer =
+    normalizeHTML(questions[currentQuestion].answer);
+
+  const result = document.getElementById("result");
+
+  result.style.display = "block";
+
+  // if文で正解・不正解を判定
+  if (userAnswer === correctAnswer) {
+
+    result.className = "result correct";
+    result.textContent = "🎉 正解です！素晴らしい！";
+
+    if (!solved.has(currentQuestion)) {
+      score++;
+      solved.add(currentQuestion);
+    }
+
+    document.getElementById("scoreText").textContent =
+      "正解数：" + score;
+
+    document.getElementById("nextButton").disabled = false;
+
+  } else {
+
+    result.className = "result incorrect";
+
+    result.textContent =
+      "❌ 不正解です。コードを確認してもう一度挑戦しましょう！";
+
+  }
+}
+
+// ==================================
+// ヒント
+// ==================================
+
+function showHint() {
+
+  const hint = document.getElementById("hint");
+
+  hint.style.display = "block";
+
+  hint.textContent =
+    "💡 ヒント：" + questions[currentQuestion].hint;
+
+}
+
+// ==================================
+// 答えを表示
+// ==================================
+
+function showAnswer() {
+
+  document.getElementById("answer").style.display = "block";
+
+  document.getElementById("answerCode").textContent =
+    questions[currentQuestion].answer;
+
+}
+
+// ==================================
+// 入力内容のプレビュー
+// ==================================
+
+function updatePreview() {
+
+  const preview = document.getElementById("preview");
+
+  preview.srcdoc = input.value;
+
+}
+
+input.addEventListener("input", updatePreview);
+
+// ==================================
+// 次の問題
+// ==================================
+
+function nextQuestion() {
+
+  if (currentQuestion < questions.length - 1) {
+
+    currentQuestion++;
+
+    loadQuestion();
+
+  } else {
+
+    document.querySelector(".card:nth-child(2)").innerHTML = `
+      <div style="text-align:center;padding:30px">
+
+        <h2>🎉 全問題終了！</h2>
+
+        <p>お疲れ様でした！</p>
+
+        <h1>${score} / ${questions.length} 問正解</h1>
+
+        <p>HTMLの基礎を学習できました！</p>
+
+        <button class="primary" onclick="location.reload()">
+          最初から挑戦する
+        </button>
+
+      </div>
+    `;
+
+    document.getElementById("progressFill").style.width =
+      "100%";
+
+  }
+
+}
+
+// ==================================
+// 入力をリセット
+// ==================================
+
+function resetAnswer() {
+
+  input.value = "";
+
+  document.getElementById("result").style.display = "none";
+
+  updatePreview();
+
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
