@@ -35,9 +35,22 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .incorrect { background: #ffebeb; color: #b33838; }
 .hint { display: none; background: #fff6dd; padding: 16px; border-radius: 8px; margin-top: 16px; }
 .answer { display: none; background: #edf3fb; padding: 16px; border-radius: 8px; margin-top: 16px; }
+.guide { display:none; background:#f5f8fd; border:1px solid #dce6f4; border-radius:10px; padding:20px; margin-top:16px; }
+.guide h3 { margin:0 0 14px; font-size:17px; color:#294d79; }
+.guide-section { margin-top:13px; line-height:1.8; }
+.guide-section b { display:block; margin-bottom:4px; color:#294d79; }
+.guide-section p { margin:0; white-space:pre-line; }
+.guide code { background:#e6edf7; padding:2px 5px; border-radius:4px; overflow-wrap:anywhere; }
+.guide pre { margin:7px 0 0; font-size:13px; line-height:1.6; }
 pre { background: #25344b; color: #e8f3ff; padding: 18px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; }
 .preview-title { margin-top: 30px; font-weight: bold; }
 iframe { width: 100%; height: 130px; border: 1px solid #dae3ee; background: white; border-radius: 8px; margin-top: 10px; }
+/* 実践編は独立したカード。既存の問題画面のデザインは維持 */
+.practice-layout {display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.practice-editor {min-height:285px;font-size:14px;line-height:1.6}
+.practice-preview {height:300px;margin:0}
+.practice-note {font-size:13px;color:#64748b;line-height:1.7}
+@media(max-width:650px){.practice-layout{grid-template-columns:1fr}.practice-preview{height:220px}}
 /* 自由練習エリアだけ追加。既存の問題画面のデザインは維持 */
 .free-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
 .free-grid textarea { min-height:270px; }
@@ -76,16 +89,53 @@ footer { text-align: center; font-size: 12px; color: #8b97a8; padding: 20px; }
       <button class="primary" onclick="checkAnswer()">答え合わせ</button>
       <button class="secondary" onclick="showHint()">ヒント</button>
       <button class="secondary" onclick="showAnswer()">答えを見る</button>
+      <button class="secondary" onclick="toggleGuide()">📖 タグの詳しい解説</button>
     </div>
     <div id="result" class="result" role="status" aria-live="polite"></div>
     <div id="hint" class="hint"></div>
     <div id="answer" class="answer"><strong>模範解答</strong><pre id="answerCode"></pre><div id="answerExplanation"></div></div>
+    <div id="guide" class="guide" aria-live="polite"></div>
     <div class="preview-title">あなたのHTML表示プレビュー</div>
     <iframe id="preview" title="HTMLプレビュー" sandbox=""></iframe>
     <div class="buttons">
       <button class="next" id="nextButton" onclick="nextQuestion()" disabled>次の問題へ →</button>
       <button class="secondary" onclick="skipQuestion()">この問題をスキップ →</button>
       <button class="secondary" onclick="resetAnswer()">入力を消す</button>
+    </div>
+  </div>
+  <div class="card" id="editPractice">
+    <h2>実践編：AIが作ったコードを修正しよう 🔧</h2>
+    <p class="free-subtitle">最初からHTMLを書く必要はありません。AIが作ったコードの<strong>変更したい部分だけ</strong>を書き換える練習です。入力内容はすぐプレビューに反映されます。</p>
+    <div class="progress-info"><span id="editProgress"></span><span id="editScore"></span></div>
+    <div class="progress-bar"><div class="progress-fill" id="editFill"></div></div>
+    <div class="question-box">
+      <strong id="editTitle"></strong>
+      <p id="editInstruction"></p>
+      <div class="practice-note" id="editGoal"></div>
+    </div>
+    <div class="practice-layout">
+      <div>
+        <label for="editCode">AIが作ったコード（ここを編集）</label>
+        <textarea id="editCode" class="practice-editor" spellcheck="false"></textarea>
+      </div>
+      <div>
+        <span class="free-panel-title">リアルタイムプレビュー</span>
+        <iframe id="editPreview" class="practice-preview" title="実践編のプレビュー" sandbox="" referrerpolicy="no-referrer"></iframe>
+        <p class="practice-note">編集するとその場で変化します。画像のURLは練習用です。</p>
+      </div>
+    </div>
+    <div class="buttons">
+      <button class="primary" onclick="checkEdit()">答え合わせ</button>
+      <button class="secondary" onclick="showEditHint()">ヒント</button>
+      <button class="secondary" onclick="showEditSolution()">修正例を見る</button>
+      <button class="secondary" onclick="resetEdit()">元に戻す</button>
+    </div>
+    <div id="editResult" class="result" role="status" aria-live="polite"></div>
+    <div id="editHint" class="hint"></div>
+    <div id="editSolution" class="answer"><strong>修正例</strong><pre id="editSolutionCode"></pre><p id="editSolutionExplain"></p></div>
+    <div class="buttons">
+      <button class="next" id="editNext" onclick="nextEdit()" disabled>次の実践問題へ →</button>
+      <button class="secondary" onclick="skipEdit()">スキップ →</button>
     </div>
   </div>
   <div class="card" id="freePractice">
@@ -136,6 +186,151 @@ const questions = [
   {level:'advanced',title:'画像がはみ出さない指定',description:'画像に style="max-width:100%; height:auto;" を付けてください。srcはphoto.jpg、altは写真。',answer:'<img src="photo.jpg" alt="写真" style="max-width:100%; height:auto;">',hint:'img の中に style="..." を追加します。',explanation:'max-width:100%は親要素からのはみ出し防止、height:autoは縦横比を保つ指定です。'},
   {level:'advanced',title:'文字の一部を赤色に',description:'「重要」を赤文字（#d60000）にしてください。',answer:'<span style="color:#d60000;">重要</span>',hint:'span の style に color:#d60000; を書きます。',explanation:'色を直すならcolorの値だけを編集。font-weight:600; を追加すると太めになります。'},
   {level:'advanced',title:'divとclassを見つける練習',description:'「メニュー」のdivにclass="menu-box"を付けてください。',answer:'<div class="menu-box">メニュー</div>',hint:'divの開始タグに class="menu-box"。',explanation:'AIが作ったサイトで .menu-box を探せば、CSS側の背景色や余白などを変更できます。'}
+];
+
+
+// 各問題でいつでも読める詳しい説明（目的 / 使いどころ / 例 / 編集ポイント / 注意点）。
+const detailedGuides = [
+  {
+    "meaning": "文章をひとまとまりにする",
+    "use": "説明文・挨拶文・料金の補足など、普通の文章に使います。",
+    "example": "<p>こんにちは</p>",
+    "edit": "<p> と </p> の間の「こんにちは」だけを別の文章に変更します。",
+    "warning": "pは paragraph（段落）の略。<p>を何個も重ねず、段落ごとに1つ使います。"
+  },
+  {
+    "meaning": "ページの一番大きな見出しを示す",
+    "use": "ページ全体のタイトル（例：サロン紹介）に使います。",
+    "example": "<h1>サロン紹介</h1>",
+    "edit": "h1の中の文字を変えれば、画面上の大見出しを修正できます。",
+    "warning": "h1は「ただ文字を大きくする」タグではなく、文章の重要度を示します。"
+  },
+  {
+    "meaning": "大見出しの下にある項目名を示す",
+    "use": "「営業時間」「料金」「アクセス」などのセクション見出しです。",
+    "example": "<h1>サロン紹介</h1>\n<h2>営業時間</h2>",
+    "edit": "h2の間の文字を編集すると、小見出しだけ変わります。",
+    "warning": "見出しの順番を意識しましょう。文字のサイズ調整はCSS側で行います。"
+  },
+  {
+    "meaning": "文章の途中で改行する",
+    "use": "住所や営業時間のように、同じまとまりの中で行だけ変えたいときに使います。",
+    "example": "月曜<br>火曜",
+    "edit": "改行したい位置に <br> を入れます。",
+    "warning": "<br> は終了タグ </br> を通常書きません。段落を分けるなら<p>を使います。"
+  },
+  {
+    "meaning": "複数の要素をまとめる箱",
+    "use": "画像と説明文を一緒に囲み、ひとかたまりとして配置するときによく使います。",
+    "example": "<div>\n  <h2>お知らせ</h2>\n  <p>本文です</p>\n</div>",
+    "edit": "開始の<div>から対応する</div>までが1つのまとまりです。",
+    "warning": "div自体には色や枠線はつきません。見た目の変更にはCSSを使います。閉じタグの位置を間違えるとレイアウトが崩れます。"
+  },
+  {
+    "meaning": "HTMLの要素につける名前（属性）",
+    "use": "「注意ボックス」「画像エリア」など、同じデザインを使いたい要素に名前をつけます。",
+    "example": "<div class=\"note\">ご案内</div>\n<style>\n.note { background: #fff4cc; }\n</style>",
+    "edit": "class=\"note\" がHTML側、.note がCSS側です。名前が一致すると指定が反映されます。",
+    "warning": "<class>というタグはありません。classは<div>や<p>などの開始タグの中に書く「属性」です。同じclassは複数の場所で使えます。"
+  },
+  {
+    "meaning": "画像をページに表示する",
+    "use": "店内写真・商品写真・ロゴなどに使います。",
+    "example": "<img src=\"photo.jpg\" alt=\"店内の写真\">",
+    "edit": "srcの中身を画像ファイル名やURLに変えます。altは画像の説明文です。",
+    "warning": "画像が見えないときはsrcの名前や配置を確認。大文字小文字にも注意。imgに終了タグは通常不要です。"
+  },
+  {
+    "meaning": "クリックして別の場所へ移動する",
+    "use": "予約ページ・外部サイト・別ページへのリンクを作ります。",
+    "example": "<a href=\"https://example.com\">予約する</a>",
+    "edit": "href内のURLが行き先。「予約する」が画面に表示される文字です。",
+    "warning": "リンク先を変えたいなら表示文字ではなくhrefを修正します。"
+  },
+  {
+    "meaning": "黒い点つきの箇条書きを作る",
+    "use": "サービス一覧や持ち物など、順序が必要ない情報に使います。",
+    "example": "<ul>\n  <li>水素</li>\n  <li>ラドン</li>\n</ul>",
+    "edit": "<li>～</li> を追加すると項目が増えます。",
+    "warning": "ulはunordered listの略。<lu>ではなく<ul>です。番号をつけたいときは<ol>を使います。"
+  },
+  {
+    "meaning": "文章の一部分だけを囲む",
+    "use": "1文の中の特定の金額・注意文・キーワードだけ色や太さを変えるときに便利です。",
+    "example": "<p>料金は<span style=\"color:#d60000; font-weight:600;\">8,000円</span>です。</p>",
+    "edit": "spanで囲んだ「8,000円」の部分だけ赤く、やや太くなります。",
+    "warning": "spanだけ書いても見た目は変わりません。styleやclassと組み合わせて使います。divは大きなまとまり、spanは文章の途中の一部分、と覚えると便利です。"
+  },
+  {
+    "meaning": "画面に表示しないメモを残す",
+    "use": "あとで修正する場所や、AIが生成したコードの区切りを見つけるために使います。",
+    "example": "<!-- ここは修正予定 -->\n<p>こんにちは</p>",
+    "edit": "<!-- と --> の中身は通常の画面には表示されません。",
+    "warning": "ページのソースコードを見ればコメントも読めるため、パスワードなど秘密情報は書かないでください。"
+  },
+  {
+    "meaning": "見出しと説明文を組み合わせる",
+    "use": "AIが作ったサイトの「項目名＋説明文」を編集するときの基本形です。",
+    "example": "<h2>料金案内</h2>\n<p>詳細はこちら</p>",
+    "edit": "項目名はh2、下の文章はpの中を修正します。",
+    "warning": "見出しと本文は役割が異なるのでタグを使い分けると読みやすくなります。"
+  },
+  {
+    "meaning": "HTMLのclassとCSSのルールを結びつける",
+    "use": "同じ名前を使うことで特定の箱だけに背景色や余白を設定できます。",
+    "example": "<div class=\"note\">お知らせ</div>\n<style>\n.note { background: #fff4cc; }\n</style>",
+    "edit": "HTMLのnoteは名前。CSSの.noteがその名前のついた要素の見た目を決めます。",
+    "warning": "classの名前だけでは色は変わりません。CSSの先頭のドット（.）も忘れないようにします。"
+  },
+  {
+    "meaning": "CSSで注意ボックスの背景を黄色にする",
+    "use": "目立たせたい案内や注意事項の背景を変えます。",
+    "example": ".note {\n  background: #fff4cc;\n}",
+    "edit": "backgroundが背景色、#fff4ccが色コードです。",
+    "warning": "CSSは通常<style>～</style>または別のCSSファイルに書きます。class=\"note\"がHTMLに存在して初めてその場所に反映されます。"
+  },
+  {
+    "meaning": "警告用のボックスを作る",
+    "use": "特に注意してほしい内容を周囲と区別して表示します。",
+    "example": "<div class=\"danger\">注意！</div>\n<style>\n.danger { background: #ffe5e5; }\n</style>",
+    "edit": "HTMLでdangerという名前をつけ、CSSの.dangerで背景を赤系にします。",
+    "warning": "dangerはHTMLが標準で赤くする特別な単語ではありません。好きなクラス名でよく、CSSが必要です。"
+  },
+  {
+    "meaning": "補足説明用のボックスを作る",
+    "use": "強い注意ほどではない、通常の補足情報をまとめるのに使います。",
+    "example": "<div class=\"gray-note\">補足説明</div>\n<style>\n.gray-note { background: #eeeeee; }\n</style>",
+    "edit": "HTMLのgray-noteとCSSの.gray-noteが対応します。",
+    "warning": "黄色や赤色と同様、色はCSS側の設定次第です。名前を変更したらHTMLとCSSを揃えましょう。"
+  },
+  {
+    "meaning": "画像を囲って位置やサイズを調整する",
+    "use": "画像の周りに余白をつけたり、中央寄せをしたいときに使います。",
+    "example": "<div class=\"image-box\">\n  <img src=\"photo.jpg\" alt=\"写真\">\n</div>",
+    "edit": "外側のdivが箱、内側のimgが実際の画像です。",
+    "warning": "image-boxは自分でつけたクラス名です。画像自体がない場合やsrcが間違う場合は表示されません。imgの表示サイズはCSSで調整します。"
+  },
+  {
+    "meaning": "画像を画面幅に合わせて収める",
+    "use": "スマホのような狭い画面で画像が横にはみ出すのを防ぎます。",
+    "example": "<img src=\"photo.jpg\" alt=\"写真\" style=\"max-width:100%; height:auto;\">",
+    "edit": "max-width:100%は親の箱より幅を大きくしない設定、height:autoは縦横の比率を保つ設定です。",
+    "warning": "max-widthは画像を必ず画面いっぱいに拡大する意味ではありません。元画像の品質やファイルサイズにも注意しましょう。"
+  },
+  {
+    "meaning": "文章の一部だけ赤字にする",
+    "use": "キャンセル条件・金額・大事な言葉だけを強調したいときに使います。",
+    "example": "<span style=\"color:#d60000; font-weight:600;\">\n買取扱いとなり、給与より天引き対応\n</span>",
+    "edit": "color:#d60000が赤文字、font-weight:600が少し太い文字にする指定です。",
+    "warning": "画面全体ではなくspanの中だけ変わります。文章全体を囲う箱のdivとは役割が違います。"
+  },
+  {
+    "meaning": "既存のCSSを探して修正する",
+    "use": "AIが作ったページの「メニュー」部分の色や余白だけ変えたいときに役立ちます。",
+    "example": "<div class=\"menu-box\">メニュー</div>\n<style>\n.menu-box { padding: 20px; }\n</style>",
+    "edit": "HTMLでclass=\"menu-box\"を探す→CSSで.menu-boxを探す→色や余白の数値を編集、という順番です。",
+    "warning": "同じクラスがほかの場所にも使われていると、それらもまとめて変わります。"
+  }
 ];
 
 // 見本として用意したクラスのCSS。通常のHTMLでは別途定義が必要。
@@ -203,6 +398,7 @@ function loadQuestion() {
   el('result').style.display = 'none';
   el('hint').style.display = 'none';
   el('answer').style.display = 'none';
+  el('guide').style.display = 'none';
   el('nextButton').disabled = true;
   updatePreview();
 }
@@ -231,6 +427,38 @@ function checkAnswer() {
 function showHint() {
   el('hint').style.display = 'block';
   el('hint').textContent = '💡 ヒント：' + activeQuestions[currentQuestion].hint;
+}
+
+function toggleGuide() {
+  const panel = el('guide');
+  if (panel.style.display === 'block') {
+    panel.style.display = 'none';
+    return;
+  }
+  const globalIndex = questions.indexOf(activeQuestions[currentQuestion]);
+  const guide = detailedGuides[globalIndex];
+  panel.replaceChildren();
+  const title = document.createElement('h3');
+  title.textContent = '📖 詳しく学ぶ：' + activeQuestions[currentQuestion].title;
+  panel.appendChild(title);
+  const sections = [
+    ['何をするタグ・指定？',guide.meaning],
+    ['どんなときに使う？',guide.use],
+    ['実際のコード例',guide.example,true],
+    ['AIが作ったコードを直すとき',guide.edit],
+    ['覚えておきたい注意点',guide.warning]
+  ];
+  for (const [heading,value,isCode] of sections) {
+    const section = document.createElement('div');
+    section.className = 'guide-section';
+    const headingEl = document.createElement('b');
+    headingEl.textContent = heading;
+    const content = document.createElement(isCode ? 'pre':'p');
+    content.textContent = value;
+    section.append(headingEl,content);
+    panel.appendChild(section);
+  }
+  panel.style.display = 'block';
 }
 
 function showAnswer() {
@@ -293,6 +521,144 @@ function resetAnswer() {
 }
 
 loadQuestion();
+
+// ==================================
+// 実践編：完成済みコードの一部を修正
+// ==================================
+const editTasks = [
+  {
+    title:'お知らせの文章を変更', instruction:'「本日は営業しています」を「本日は19時まで営業します」に変更してください。',
+    goal:'ヒント：文字を変えるときは、<p> と </p> の間を探します。',
+    start:'<div class="notice">\n  <h2>お知らせ</h2>\n  <p>本日は営業しています</p>\n</div>',
+    answer:'<div class="notice">\n  <h2>お知らせ</h2>\n  <p>本日は19時まで営業します</p>\n</div>',
+    hint:'<p>本日は営業しています</p> の文章だけを直します。',
+    explain:'pタグは文章を入れる場所です。前後のタグは残したまま、間の文字を書き換えます。',
+    test:doc=>doc.querySelector('.notice p')?.textContent.trim()==='本日は19時まで営業します'
+  },
+  {
+    title:'見出しを変更', instruction:'「メニュー」を「施術メニュー」に変更してください。',
+    goal:'ヒント：見出しは <h2> に書かれています。',
+    start:'<section>\n  <h2>メニュー</h2>\n  <p>お好きな施術をお選びください。</p>\n</section>',
+    answer:'<section>\n  <h2>施術メニュー</h2>\n  <p>お好きな施術をお選びください。</p>\n</section>',
+    hint:'<h2> と </h2> の間の文字を探します。',
+    explain:'h2はセクションの見出しです。大きさを指定するためだけのタグではなく、ページの構造を表します。',
+    test:doc=>doc.querySelector('section h2')?.textContent.trim()==='施術メニュー'
+  },
+  {
+    title:'class名を変更', instruction:'お知らせの箱の class="gray-note" を class="note" に変更してください。',
+    goal:'黄色の注意ボックスになるように編集します。',
+    start:'<style>\n.note { background:#fff4cc; padding:14px; }\n.gray-note { background:#eeeeee; padding:14px; }\n</style>\n<div class="gray-note">ご確認ください</div>',
+    answer:'<style>\n.note { background:#fff4cc; padding:14px; }\n.gray-note { background:#eeeeee; padding:14px; }\n</style>\n<div class="note">ご確認ください</div>',
+    hint:'CSSの .note はすでに定義されています。div の class 名だけを変更します。',
+    explain:'classはHTML側の「デザインの名前」です。CSSの .note に書かれた見た目が適用されます。',
+    test:doc=>doc.querySelector('div.note')?.textContent.trim()==='ご確認ください'
+  },
+  {
+    title:'文字の一部を赤色に', instruction:'「8,000円」の部分だけ赤文字にしてください。',
+    goal:'span の style="color:..." の値を変更します。',
+    start:'<p>イベント料金：<span style="color:#333333;">8,000円</span></p>',
+    answer:'<p>イベント料金：<span style="color:#d60000;">8,000円</span></p>',
+    hint:'span の color:#333333; を color:#d60000; にします。',
+    explain:'spanは文章の一部分だけを囲むタグ。colorは文字色、#d60000は赤のカラーコードです。',
+    test:doc=>{const e=doc.querySelector('p span');return e?.textContent.trim()==='8,000円'&&e.style.color.toLowerCase()==='rgb(214, 0, 0)';}
+  },
+  {
+    title:'画像の保存先を変更', instruction:'表示する画像を images/salon.jpg に変更してください。',
+    goal:'画像が画面上で表示されなくても、srcが正しければ正解です。',
+    start:'<div class="image-box">\n  <img src="images/old.jpg" alt="サロン店内">\n</div>',
+    answer:'<div class="image-box">\n  <img src="images/salon.jpg" alt="サロン店内">\n</div>',
+    hint:'imgタグの src="images/old.jpg" を編集します。',
+    explain:'srcは画像の場所を指定します。実際に表示するには、指定先に画像ファイルが必要です。altは画像の説明です。',
+    test:doc=>doc.querySelector('.image-box img')?.getAttribute('src')==='images/salon.jpg'
+  },
+  {
+    title:'警告ボックスに変更', instruction:'灰色の案内を赤色の警告ボックス（danger）に変更してください。',
+    goal:'CSSは用意済み。classの指定を変更するだけです。',
+    start:'<style>\n.gray-note { background:#eeeeee; padding:15px; }\n.danger { background:#ffe5e5; color:#9b0000; padding:15px; }\n</style>\n<div class="gray-note">注意：期限をご確認ください</div>',
+    answer:'<style>\n.gray-note { background:#eeeeee; padding:15px; }\n.danger { background:#ffe5e5; color:#9b0000; padding:15px; }\n</style>\n<div class="danger">注意：期限をご確認ください</div>',
+    hint:'最後の <div class="gray-note"> を変更します。',
+    explain:'dangerはHTMLに備わった特別な命令ではなく、CSSで赤色に定義したクラス名です。',
+    test:doc=>doc.querySelector('div.danger')?.textContent.includes('期限')
+  },
+  {
+    title:'CSSで背景色を変更', instruction:'カードの背景を薄い青色 #e6f2ff にしてください。',
+    goal:'HTML本文はそのまま。styleタグ内の background を探します。',
+    start:'<style>\n.card-box { background:#eeeeee; padding:18px; border-radius:10px; }\n</style>\n<div class="card-box">おすすめメニュー</div>',
+    answer:'<style>\n.card-box { background:#e6f2ff; padding:18px; border-radius:10px; }\n</style>\n<div class="card-box">おすすめメニュー</div>',
+    hint:'CSSの .card-box の background:#eeeeee; を書き換えます。',
+    explain:'class="card-box" の要素はCSSの .card-box に従います。backgroundは背景色、paddingは内側の余白です。',
+    test:doc=>{const e=doc.querySelector('.card-box');const css=doc.querySelector('style')?.textContent||'';return !!e&&/\.card-box\s*\{[^}]*background\s*:\s*#e6f2ff\s*;/i.test(css);}
+  },
+  {
+    title:'リンク先を変更', instruction:'「予約はこちら」のリンク先を https://example.com/reserve に変更してください。',
+    goal:'リンクに表示する文章は変更しません。',
+    start:'<p><a href="https://example.com">予約はこちら</a></p>',
+    answer:'<p><a href="https://example.com/reserve">予約はこちら</a></p>',
+    hint:'aタグの href="..." がリンク先です。',
+    explain:'hrefを変更するとクリック時の移動先が変わります。文字を変更してもURLは変わりません。',
+    test:doc=>doc.querySelector('a')?.getAttribute('href')==='https://example.com/reserve'
+  }
+];
+let editIndex=0;
+let editScore=0;
+const editSolved=new Set();
+function loadEdit(){
+  const task=editTasks[editIndex];
+  el('editTitle').textContent='実践 '+(editIndex+1)+'. '+task.title;
+  el('editInstruction').textContent=task.instruction;
+  el('editGoal').textContent=task.goal;
+  el('editProgress').textContent='実践問題 '+(editIndex+1)+' / '+editTasks.length;
+  el('editScore').textContent='正解数：'+editScore;
+  el('editFill').style.width=(editIndex/editTasks.length*100)+'%';
+  el('editCode').value=task.start;
+  for(const id of ['editResult','editHint','editSolution']) el(id).style.display='none';
+  el('editNext').disabled=true;
+  updateEditPreview();
+}
+function updateEditPreview(){
+  el('editPreview').srcdoc=previewDocument(el('editCode').value);
+}
+el('editCode').addEventListener('input',updateEditPreview);
+function checkEdit(){
+  const task=editTasks[editIndex];
+  // DOMParserでHTMLとして解釈し、タグ・属性・文字や色の変更結果を検査。
+  const doc=new DOMParser().parseFromString(el('editCode').value,'text/html');
+  const ok=!!task.test(doc);
+  const result=el('editResult');
+  result.style.display='block';
+  result.className='result '+(ok?'correct':'incorrect');
+  result.textContent=ok?'🎉 正解！変更する場所が分かりました！':'❌ まだ目標の変更になっていません。ヒントを確認しましょう。';
+  if(ok){
+    if(!editSolved.has(editIndex)){editSolved.add(editIndex);editScore++;}
+    el('editScore').textContent='正解数：'+editScore;
+    el('editNext').disabled=false;
+  }
+}
+function showEditHint(){
+  el('editHint').textContent='💡 ヒント：'+editTasks[editIndex].hint;
+  el('editHint').style.display='block';
+}
+function showEditSolution(){
+  const task=editTasks[editIndex];
+  el('editSolutionCode').textContent=task.answer;
+  el('editSolutionExplain').textContent='解説：'+task.explain;
+  el('editSolution').style.display='block';
+}
+function resetEdit(){el('editCode').value=editTasks[editIndex].start;updateEditPreview();el('editResult').style.display='none';}
+function nextEdit(){
+  if(editIndex<editTasks.length-1){editIndex++;loadEdit();}
+  else finishEdit();
+}
+function skipEdit(){if(editIndex<editTasks.length-1){editIndex++;loadEdit();}else finishEdit();}
+function finishEdit(){
+  el('editResult').style.display='block';
+  el('editResult').className='result correct';
+  el('editResult').textContent='🎉 実践編終了！ '+editScore+' / '+editTasks.length+' 問正解。最初からやり直す場合はページを再読み込みしてください。';
+  el('editNext').disabled=true;
+  el('editFill').style.width='100%';
+}
+loadEdit();
+
 </script>
 </body>
 </html>
